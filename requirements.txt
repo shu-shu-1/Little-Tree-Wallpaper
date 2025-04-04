@@ -1,6 +1,0 @@
-pywin32==306
-requests==2.32.3
-tkintertools==3.0.0rc1
-plyer==2.1.0
-pillow==10.4.0
-colorama==0.4.6

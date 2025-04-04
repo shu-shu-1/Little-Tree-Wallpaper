@@ -28,8 +28,8 @@
 
 import sys
 
-if sys.platform == "win32":
-    import win32clipboard
+# if sys.platform == "win32":
+#     import win32clipboard
 
 # 标准库
 import queue
@@ -50,12 +50,12 @@ import webbrowser
 import shutil
 
 # 非标准库
+import pyperclip
 import pystray
 import requests
 import concurrent
 import xswpAPI.image
 import xswpAPI.wallpaper
-import xswpAPI.theme
 import xswpAPI.config
 import maliang
 import maliang.animation as animation
@@ -513,16 +513,8 @@ def compare_versions(version1, version2):
 
 def copy_image_to_clipboard(image_path):
     img = Image.open(image_path)
-    
-    output = io.BytesIO()
-    img.convert('RGB').save(output, 'BMP')
-    data = output.getvalue()[14:]
-    output.close()
-    
-    win32clipboard.OpenClipboard()
-    win32clipboard.EmptyClipboard()
-    win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
-    win32clipboard.CloseClipboard()
+    img.convert('RGB')  # 转为RGB格式以支持跨平台
+    pyperclip.copy(img)  # 自动适配各系统剪贴板
 
 
 def get_my_pictures_path() -> str:

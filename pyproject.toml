@@ -1,0 +1,22 @@
+[project]
+name = "Little-Tree-Wallpaper"
+version = "6.0.0"
+description = "The Little Tree Wallpaper is a simple wallpaper software based on Python 小树壁纸是一款简单的基于Python的壁纸软件"
+authors = [
+    {name = "shu-shu-1", email = "zs3458222@outlook.com"},
+    {name = "wsrscx", email = "3599637346@qq.com"}
+]
+dependencies = [
+    "colorama>=0.4.6",
+    "maliang[opt]>=3.0.3",
+    "plyer>=2.1.0",
+    "pyperclip>=1.9.0",
+    "pystray>=0.19.5",
+    "requests>=2.24.0",
+    "tomlkit>=0.13.2",
+]
+
+
+[[tool.uv.index]]
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true
