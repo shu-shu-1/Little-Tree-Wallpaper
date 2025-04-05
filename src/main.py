@@ -451,6 +451,7 @@ def copy_and_set_wallpaper(image_path,*args) -> None:
     """
     shutil.copyfile(image_path, f"{WALLPAPER_PATH}{os.path.basename(image_path)}")
     set_wallpaper(f"{WALLPAPER_PATH}{os.path.basename(image_path)}")
+    
 def set_wallpaper(filelink) -> None:
     """
     设置壁纸。
