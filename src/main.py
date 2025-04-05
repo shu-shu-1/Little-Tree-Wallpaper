@@ -64,8 +64,12 @@ from plyer import notification
 from PIL import Image, ImageFile
 from colorama import Fore, Style
 from functools import lru_cache
-
 from importlib.util import find_spec
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 模块: 启动检查
+# 功能: 检查系统环境并给出提示
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 if sys.platform == "win32" and find_spec("win32clipboard") is None:
     print(Fore.RED + "缺少win32clipboard库，请安装后重试！" + Style.RESET_ALL)
