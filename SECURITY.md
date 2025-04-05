@@ -8,7 +8,7 @@ Support for security updates
 
 | Version 版本 | Supported 支持                                               |
 | ------------ | ------------------------------------------------------------ |
-| 6.0.0-rc.x  | Active security update support 积极的安全更新支持            |
+| 6.0.0-Test-Version   | Active security update support 积极的安全更新支持            |
 | 5.1          | Only support updates that have serious security impacts 仅支持影响严重的安全的更新 |
 | 5.0.x        | Not supported 不受支持                                       |
 | 4.5.x        | Only support updates that have serious security impacts 仅支持影响严重的安全的更新 |
@@ -16,9 +16,10 @@ Support for security updates
 
 ## 🐞 Reporting a Vulnerability 报告一个漏洞
 
-If you discover serious security vulnerabilities, please create an issue directly. If the problem is too serious, please contact me via WeChat (zhangshu20190101)
 
-如果你发现了严重的安全漏洞请直接创建议题，如果问题过于严重，请通过微信(zhangshu20190101)联系我
+If you discover a security vulnerability in this program, please do not submit an issue. Contact me via email: [shu-shu-1](mailto:zs3458222@outlook.com).
+
+如果您发现了本程序的安全漏洞，请勿提交issue，请通过邮箱联系我：[shu-shu-1](mailto:zs3458222@outlook.com)。
 
 I will fix it as soon as possible after learning of the problem. Please note: If the bug cannot be fixed, it will be indicated. If the bug is too serious, this version will be immediately deactivated.
 
