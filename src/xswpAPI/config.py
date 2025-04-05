@@ -87,7 +87,7 @@ version = "2.0.0" # 配置文件版本
 language = "zh-CN" # 语言设置
 color_mode = "auto" # 深/浅模式
 window_background_image_path = "" # 窗口壁纸路径
-window_icon_path = "./assets/icon/icon.ico" # 窗口图标路径
+window_icon_path = "./assets/icons/icon.ico" # 窗口图标路径
 
 [update] # 更新设置
 enabled = 1 # 是否启用更新检查

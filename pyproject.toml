@@ -1,10 +1,23 @@
 [project]
 name = "Little-Tree-Wallpaper"
 version = "6.0.0"
-description = "The Little Tree Wallpaper is a simple wallpaper software based on Python 小树壁纸是一款简单的基于Python的壁纸软件"
+description = """
+Little Tree Wallpaper is a simple Python-based wallpaper software.
+小树壁纸是一款简单的基于Python的壁纸软件。
+"""
+readme = "README.md"
+license = {text = "AGPL-3.0-only"}
 authors = [
     {name = "shu-shu-1", email = "zs3458222@outlook.com"},
     {name = "wsrscx", email = "3599637346@qq.com"}
+]
+requires-python = ">=3.12"
+keywords = ["wallpaper", "desktop", "python", "tkinter", "maliang"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: End Users/Desktop",
+    "Topic :: Multimedia :: Graphics",
 ]
 dependencies = [
     "colorama>=0.4.6",
@@ -16,7 +29,23 @@ dependencies = [
     "tomlkit>=0.13.2",
 ]
 
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
+windows = ["pywin32>=308"]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/Little-Tree-Wallpaper"
+Documentation = "https://github.com/yourusername/Little-Tree-Wallpaper#readme"
+Issues = "https://github.com/yourusername/Little-Tree-Wallpaper/issues"
+
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
 
 [[tool.uv.index]]
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
+
+[tool.uv.workspace]
+members = ["Little-Tree-Wallpaper"]

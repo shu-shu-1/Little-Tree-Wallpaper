@@ -1,0 +1,15 @@
+start.cmd
+start.sh
+__pycache__
+.env/
+.venv/
+.vscode/
+.pytest_cache/
+dist/
+build/
+src/temp/
+src/logs/
+src/tests/
+src/tools/
+src/Little_Tree_Wallpaper.egg-info/
+
