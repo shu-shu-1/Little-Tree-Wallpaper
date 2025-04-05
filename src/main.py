@@ -4194,8 +4194,5 @@ COMMAND_MAP = {
 }
 
 
-# with open("test.lts", "r", encoding="utf-8") as f:
-#     threading.Thread(target=script_thread, args=(f.read(),)).start()
-
 start_panel()
 root.mainloop()
