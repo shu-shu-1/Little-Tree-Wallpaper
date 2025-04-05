@@ -31,7 +31,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
-windows = ["pywin32>=308"]
+windows = ["pywin32>=310"]
 
 [project.urls]
 Homepage = "https://github.com/yourusername/Little-Tree-Wallpaper"

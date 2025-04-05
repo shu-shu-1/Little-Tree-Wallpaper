@@ -47,7 +47,6 @@ import webbrowser
 import shutil
 
 # 非标准库
-import pyperclip
 import pystray
 import requests
 import concurrent
@@ -66,6 +65,12 @@ from PIL import Image, ImageFile
 from colorama import Fore, Style
 from functools import lru_cache
 
+from importlib.util import find_spec
+
+if sys.platform == "win32" and find_spec("win32clipboard") is None:
+    print(Fore.RED + "缺少win32clipboard库，请安装后重试！" + Style.RESET_ALL)
+    maliang.dialogs.TkMessage("您当前使用的是Windows平台，但是您未安装pywin32库，请安装后重试！",title="小树壁纸-启动检查",icon="error")
+    sys.exit(1)
 
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -217,7 +222,7 @@ def new_folder(folder_name: str) -> None:
     """
     创建一个新文件夹，如果文件夹已存在则记录信息而不重复创建。
 
-    参数:
+    Args:
     folder_name (str): 要创建的文件夹的名称或路径。
 
     如果指定的文件夹名称在文件系统中已经存在，则会记录一条信息并返回，
@@ -252,10 +257,10 @@ def extract_filename(path: str) -> list:
     """
     提取文件名和扩展名。
 
-    参数:
+    Args:
     path (str): 文件路径。
 
-    返回:
+    Returns:
     list: 包含文件名和扩展名的列表。
     """
     head, tail = os.path.split(path.rstrip(os.sep))
@@ -265,8 +270,8 @@ def check_api_accessibility_and_latency(api_dict : dict):
     """
     检查API端点的可访问性和延迟。
 
-    参数:
-    api_dict (dict): 包含API来源及其对应端点URL的字典。格式如下：
+    Args:
+        api_dict (dict): 包含API来源及其对应端点URL的字典。格式如下：
             {
                 "来源1": {
                     "端点1": "URL1",
@@ -277,8 +282,8 @@ def check_api_accessibility_and_latency(api_dict : dict):
                 }
             }
 
-    返回:
-    dict: 检查结果字典，包含每个API来源及其端点的可访问性、延迟和状态码或错误信息。格式如下：
+    Returns:
+        dict: 检查结果字典，包含每个API来源及其端点的可访问性、延迟和状态码或错误信息。格式如下：
             {
                 "来源1": {
                     "端点1": {"可访问": True/False, "延迟": float, "状态码": int},
@@ -289,11 +294,11 @@ def check_api_accessibility_and_latency(api_dict : dict):
                 }
             }
 
-    说明:
-    - 如果端点URL是列表，将使用列表中的第一个URL进行检查。
-    - 对于每个端点，通过发送GET请求来检查其可访问性，并计算请求的延迟。
-    - 如果请求成功（状态码200），则记录可访问性为True，延迟为请求所用时间，并记录状态码。
-    - 如果请求失败，则记录可访问性为False，延迟为None，并记录错误信息。
+    Notes:
+        - 如果端点URL是列表，将使用列表中的第一个URL进行检查。
+        - 对于每个端点，通过发送GET请求来检查其可访问性，并计算请求的延迟。
+        - 如果请求成功（状态码200），则记录可访问性为True，延迟为请求所用时间，并记录状态码。
+        - 如果请求失败，则记录可访问性为False，延迟为None，并记录错误信息。
     """
     results = {}
 
@@ -451,7 +456,7 @@ def copy_and_set_wallpaper(image_path,*args) -> None:
     """
     shutil.copyfile(image_path, f"{WALLPAPER_PATH}{os.path.basename(image_path)}")
     set_wallpaper(f"{WALLPAPER_PATH}{os.path.basename(image_path)}")
-    
+
 def set_wallpaper(filelink) -> None:
     """
     设置壁纸。
@@ -555,9 +560,48 @@ def copy_image_to_clipboard(image_path) -> None:
         None
     """
     try:
-        img = Image.open(image_path)
-        img.convert('RGB')  
-        pyperclip.copy(img) 
+        # 打开图片并转换为RGB模式
+        img = Image.open(image_path).convert('RGB')
+
+        # 跨平台处理：根据操作系统选择合适的剪贴板操作
+        if sys.platform == "win32":
+            # Windows 平台使用 ImageGrab 和 Clipboard API
+            import win32clipboard
+            from io import BytesIO
+
+            output = BytesIO()
+            img.save(output, format='BMP')
+            data = output.getvalue()[14:]  # BMP 文件头需要去掉前14字节
+            output.close()
+
+            win32clipboard.OpenClipboard()
+            win32clipboard.EmptyClipboard()
+            win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+            win32clipboard.CloseClipboard()
+
+        elif sys.platform == "darwin":
+            # macOS 平台使用 pbcopy
+            import subprocess
+            from tempfile import NamedTemporaryFile
+
+            with NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
+                img.save(tmp_file.name, format="PNG")
+                subprocess.run(["pbcopy", tmp_file.name], check=True)
+
+        else:
+            # Linux 平台使用 xclip 或 xsel
+            import subprocess
+            from tempfile import NamedTemporaryFile
+
+            with NamedTemporaryFile(suffix=".png", delete=False) as tmp_file:
+                img.save(tmp_file.name, format="PNG")
+                try:
+                    # 尝试使用 xclip
+                    subprocess.run(["xclip", "-selection", "clipboard", "-t", "image/png", "-i", tmp_file.name], check=True)
+                except FileNotFoundError:
+                    # 如果 xclip 不可用，尝试使用 xsel
+                    subprocess.run(["xsel", "--clipboard", "--input", "--type", "image/png", "<", tmp_file.name], check=True, shell=True)
+
     except Exception as e:
         logging.error(f"复制图片到剪贴板失败: {e}")
         
