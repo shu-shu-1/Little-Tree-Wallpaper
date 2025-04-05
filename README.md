@@ -30,9 +30,9 @@ This project follows the versioning conventions of [Semantic Versioning 2.0.0](h
 
 ## Special Thanks / 特别感谢
 
-A special thanks to [Xiaokang2022](https://github.com/Xiaokang2022), the author of [tkintertools](https://github.com/Xiaokang2022/tkintertools), for their invaluable technical support! 🙏
+A special thanks to [Xiaokang2022](https://github.com/Xiaokang2022), the author of [maliang](https://github.com/Xiaokang2022/maliang), for their invaluable technical support! 🙏
 
-特别感谢项目[tkintertools](https://github.com/Xiaokang2022/tkintertools)的作者[Xiaokang2022](https://github.com/Xiaokang2022)对本项目的技术支持！
+特别感谢项目[maliang](https://github.com/Xiaokang2022/maliang)的作者[Xiaokang2022](https://github.com/Xiaokang2022)对本项目的技术支持！
 
 ## Star History / Star 趋势 🌟
 

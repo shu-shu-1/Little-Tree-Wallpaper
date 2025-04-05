@@ -28,9 +28,6 @@
 
 import sys
 
-# if sys.platform == "win32":
-#     import win32clipboard
-
 # 标准库
 import queue
 import traceback
@@ -54,9 +51,9 @@ import pyperclip
 import pystray
 import requests
 import concurrent
-import xswpAPI.image
-import xswpAPI.wallpaper
-import xswpAPI.config
+import ltwpAPI.image
+import ltwpAPI.wallpaper
+import ltwpAPI.config
 import maliang
 import maliang.animation as animation
 import maliang.core.configs as configs
@@ -429,7 +426,7 @@ def set_wallpaper(filelink):
     # Hkey = win32api.RegCreateKey(win32con.HKEY_CURRENT_USER, r'Control Panel\Desktop')
     # win32api.RegSetValueEx(Hkey, 'WallPaper', 0, win32con.REG_SZ, filelink)
     # win32api.RegCloseKey(Hkey)
-    set_wallpaper_class=xswpAPI.wallpaper.WallpaperChanger()
+    set_wallpaper_class=ltwpAPI.wallpaper.WallpaperChanger()
     set_wallpaper_class.set_wallpaper(filelink)
 
 def compare_versions(version1, version2):
@@ -553,6 +550,7 @@ def get_my_pictures_path() -> str:
                 return os.path.expanduser("~/Pictures")
         except Exception as e:
             logging.error(f"Linux 平台未知错误: {e}")
+            print(f"错误: {e.strerror}")
             maliang.dialogs.TkMessage(
                 icon="error", 
                 title="路径错误",
@@ -575,6 +573,7 @@ def get_my_pictures_path() -> str:
             return os.path.expandvars(my_pictures_path)
         except OSError as error:
             logging.error(f"注册表读取错误: {error}")
+            print(f"错误: {error.strerror}")
             maliang.dialogs.TkMessage(
                 icon="error",
                 title="注册表错误",
@@ -584,6 +583,7 @@ def get_my_pictures_path() -> str:
             raise
         except Exception as e:
             logging.error(f"未知错误: {e}")
+            print(f"错误: {e.strerror}")
             maliang.dialogs.TkMessage(
                 icon="error",
                 title="系统错误",
@@ -604,8 +604,9 @@ def determine_image_format(image_path: str) -> str:
             format = img.format
             logging.info(f"图片格式为{format}")
             return format
-    except IOError:
+    except IOError as e:
         logging.error(f"无法打开图片文件: {image_path}")
+        print(f"错误: {e.strerror}")
         return None
 
 def change_file_extension(file_path, new_extension):
@@ -630,9 +631,8 @@ def change_file_extension(file_path, new_extension):
         logging.info(f"{file_path}文件重命名为{new_file_path}".replace("\\","/"))
         return new_file_path
     except OSError as e:
-        
         logging.error(f"无法重命名文件: {e}")
-        # print(f"Error: {e.strerror}")
+        print(f"错误: {e.strerror}")
         return None
     
 def clean_filename(filename):
@@ -949,6 +949,7 @@ def script_thread(script):
         )
     except Exception as e:
         logging.error(f"[脚本线程 | ID{threading.get_ident()}] 脚本执行错误: {e}")
+        print(f"错误: {e.strerror}")
         notification.notify(
             title="脚本执行错误",
             message=f"错误详情：{str(e)}",
@@ -1091,6 +1092,7 @@ if os.path.exists(CONFIG_PATH) is not True:
             logging.info("创建配置文件目录成功")
         except Exception as e:
             logging.error(f"创建配置文件目录失败, 错误: {e}")
+            print(f"错误: {e.strerror}")
             maliang.dialogs.TkMessage(icon="error",title="严重错误：创建配置文件目录失败",message="详细错误信息请查看日志",detail="你可以向作者反馈此问题")
             webbrowser.open("https://github.com/shu-shu-1/Xiaoshu-Wallpaper/issues/new?labels=bug")
             os._exit(0)
@@ -1098,14 +1100,15 @@ if os.path.exists(CONFIG_PATH) is not True:
         logging.info("创建空配置文件成功")
         f.read()
         f.close()
-    cog = xswpAPI.config.ConfigManager(CONFIG_PATH)
+    cog = ltwpAPI.config.ConfigManager(CONFIG_PATH)
     cog.reset_config()
     logging.info("已载入默认配置")
 else:
     try:
-        cog = xswpAPI.config.ConfigManager(CONFIG_PATH)
+        cog = ltwpAPI.config.ConfigManager(CONFIG_PATH)
     except Exception as e:
         logging.error(f"载入配置文件失败, 错误: {e}")
+        print(f"错误: {e.strerror}")
         maliang.dialogs.TkMessage(icon="error",title="严重错误：载入配置文件失败",message="详细错误信息请查看日志",detail="你可以向作者反馈此问题(前提是你未手动修改配置文件)或删除配置文件")
         webbrowser.open("https://github.com/shu-shu-1/Xiaoshu-Wallpaper/issues/new?labels=bug")
         os._exit(0)
@@ -1331,6 +1334,7 @@ def fetch_latest_release(
     except KeyError as e:
         error_msg = f"JSON字段解析失败: {str(e)}"
         logging.error(error_msg)
+        print(f"错误: {e.strerror}")
         return {
             "status": "error",
             "error_message": error_msg
@@ -1338,6 +1342,7 @@ def fetch_latest_release(
     except Exception as e:
         error_msg = f"未知错误: {str(e)}"
         logging.error(error_msg)
+        print(f"错误: {e.strerror}")
         return {
             "status": "error",
             "error_message": error_msg
@@ -1369,6 +1374,7 @@ def download_file(url, folder='./temp', manual_filename=None):
             os.makedirs(folder)
     except Exception as e:
         logging.error(f"创建下载目录失败: {e}")
+        print(f"错误: {e.strerror}")
         return None
     
     # 创建一个会话
@@ -1432,6 +1438,7 @@ def download_file(url, folder='./temp', manual_filename=None):
 
     except requests.exceptions.RequestException as e:
         logging.error(f"下载文件时出错: {e}")
+        print(f"错误: {e.strerror}")
         return None
 
 def ssp_bing_loading():
@@ -1446,13 +1453,14 @@ def ssp_bing_loading():
         occupied_file_list.append(bing_img_temp)
         logging.info("Bing壁纸图片下载成功")
         bing_loading_text.set("加载中...3/3")
-        bing_img_view=maliang.Image(canvas_ssp, (20,100), image=maliang.PhotoImage(xswpAPI.image.RoundedImage(15).round_corners(xswpAPI.image.ImageScaler(Image.open(bing_img_temp)).scale_by_size(new_height=200))))
+        bing_img_view=maliang.Image(canvas_ssp, (20,100), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(15).round_corners(ltwpAPI.image.ImageScaler(Image.open(bing_img_temp)).scale_by_size(new_height=200))))
         logging.info("Bing壁纸图片加载成功")
         sbb.forget(False)
         vb.forget(False)
         bing_loading_text.forget()
     except Exception as e:
         logging.error(f"加载Bing壁纸失败：{e}")
+        print(f"错误: {e.strerror}")
         bing_loading_text.set("加载出现错误，请查看日志了解详情。")
     # spotlight_data=get_spotlight_image()
 def ssp_spotlight_loading():
@@ -1465,28 +1473,29 @@ def ssp_spotlight_loading():
         spotlight_loading_text.set("加载中...2/5")
         spotlight_img_temp1=download_file(spotlight_data[0]["url"], manual_filename="spotlight1")
         occupied_file_list.append(spotlight_img_temp1)
-        spotlight_img_view1=maliang.Image(canvas_ssp, (25,360), image=maliang.PhotoImage(xswpAPI.image.RoundedImage(10).round_corners(xswpAPI.image.ImageScaler(Image.open(spotlight_img_temp1)).scale_by_size(new_height=110))))
+        spotlight_img_view1=maliang.Image(canvas_ssp, (25,360), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp1)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片1下载成功")
         spotlight_loading_text.set("加载中...3/5")
         spotlight_img_temp2=download_file(spotlight_data[1]["url"], manual_filename="spotlight2")
         occupied_file_list.append(spotlight_img_temp2)
-        spotlight_img_view2=maliang.Image(canvas_ssp, (225,360), image=maliang.PhotoImage(xswpAPI.image.RoundedImage(10).round_corners(xswpAPI.image.ImageScaler(Image.open(spotlight_img_temp2)).scale_by_size(new_height=110))))
+        spotlight_img_view2=maliang.Image(canvas_ssp, (225,360), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp2)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片2下载成功")
         spotlight_loading_text.set("加载中...4/5")
         spotlight_img_temp3=download_file(spotlight_data[2]["url"], manual_filename="spotlight3")
         occupied_file_list.append(spotlight_img_temp3)
-        spotlight_img_view3=maliang.Image(canvas_ssp, (25,480), image=maliang.PhotoImage(xswpAPI.image.RoundedImage(10).round_corners(xswpAPI.image.ImageScaler(Image.open(spotlight_img_temp3)).scale_by_size(new_height=110))))      
+        spotlight_img_view3=maliang.Image(canvas_ssp, (25,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp3)).scale_by_size(new_height=110))))      
         logging.info("Spotlight壁纸图片3下载成功")
         spotlight_loading_text.set("加载中...5/5")
         spotlight_img_temp4=download_file(spotlight_data[3]["url"], manual_filename="spotlight4")
         occupied_file_list.append(spotlight_img_temp4)
-        spotlight_img_view4=maliang.Image(canvas_ssp, (225,480), image=maliang.PhotoImage(xswpAPI.image.RoundedImage(10).round_corners(xswpAPI.image.ImageScaler(Image.open(spotlight_img_temp4)).scale_by_size(new_height=110))))
+        spotlight_img_view4=maliang.Image(canvas_ssp, (225,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp4)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片4下载成功")
         logging.info("Spotlight壁纸图片加载成功")
         svb.forget(False)
         spotlight_loading_text.forget()
     except Exception as e:
         logging.error(f"加载Spotlight壁纸失败：{e}")
+        print(f"错误: {e.strerror}")
         spotlight_loading_text.set("加载出现错误，请查看日志了解详情。")
 def show_root():
     root.deiconify()
@@ -2106,6 +2115,7 @@ def create_ui_element(parent, element_config):
     
     except Exception as e:
         logging.error(f"UI元素创建失败: {str(e)}")
+        print(f"错误: {e.strerror}")
         traceback.print_exc()
 
 # 优化后的图片处理函数（支持动态锚点）
@@ -2135,6 +2145,7 @@ def process_image(image_path, target_size=None, crop_area=None):
     
     except Exception as e:
         logging.error(f"图片处理失败: {str(e)}")
+        print(f"错误: {e.strerror}")
         return maliang.PhotoImage(Image.new('RGB', (100, 100), color='gray'))
 
 def index_window(*args):
@@ -2606,6 +2617,7 @@ def change_setting_page(page):
 
                 except Exception as e:
                     logging.error(f"更新检查失败：{e}")
+                    print(f"错误: {e.strerror}")
                     maliang.dialogs.TkMessage(icon="error",title="更新",message="更新检查失败",detail="未知错误\n详细错误信息请查看日志")
 
                 
@@ -2766,8 +2778,8 @@ maliang.Text(canvas_about, (100, 100), text="关于", fontsize=50, anchor="cente
 maliang.Text(canvas_about, (100, 150), text="小树壁纸", fontsize=35, anchor="w")
 maliang.Text(canvas_about, (100, 185), text=f"{VER}(内部版本号：{INSIDE_VER})", fontsize=20, anchor="w")
 maliang.Text(canvas_about, (100, 250), text="制作：小树\n出品：小树工作室\n感谢所有参与测试的人！\n\n本程序基于AGPL-3.0 license开源", fontsize=20, anchor="nw")
-kaiyuan=maliang.Text(canvas_about, (100, 385), text="感谢开源项目tkintertools:https://github.com/Xiaokang2022/tkintertools\n本程序仅供个人学习交流使用，请勿用于商业用途！", fontsize=20, anchor="nw")
-canvas_about.tag_bind(kaiyuan, "<Button-1>", lambda event: webbrowser.open("https://github.com/Xiaokang2022/tkintertools"))
+open_source=maliang.Text(canvas_about, (100, 385), text="感谢开源项目maliang:https://github.com/Xiaokang2022/maliang\n本程序仅供个人学习交流使用，请勿用于商业用途！", fontsize=20, anchor="nw")
+canvas_about.tag_bind(open_source, "<Button-1>", lambda event: webbrowser.open("https://github.com/Xiaokang2022/maliang"))
 back_about = maliang.Canvas(canvas_about, auto_zoom=True, keep_ratio="min", free_anchor=True)
 back_about.place(x=50, y=670,width=40,height=40,anchor="center")
 maliang.Text(back_about, (0, 0), text="", fontsize=40, family="Segoe Fluent lcons",anchor="nw")
@@ -2999,6 +3011,7 @@ def download_wallpaper(type_name):
 
         except Exception as e:
             logging.error(f"下载失败: {e}")
+            print(f"错误: {e.strerror}")
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             canvas_download.place_forget()
             wallpaper()  # 返回壁纸页面
@@ -3450,6 +3463,7 @@ def wallpaper_360():
 
                     except Exception as e:
                         logging.error(f"下载失败: {e}")
+                        print(f"错误: {e.strerror}")
                         maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
                         # canvas_download.place_forget()
                         canvas_wallpaper_more_360_download.place_forget()
@@ -3568,7 +3582,7 @@ def dd(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-
+            print(f"错误: {e.strerror}")
             more_bing()
 
         # 任务完成后更新窗口
@@ -3653,7 +3667,7 @@ def ll(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-
+            print(f"错误: {e.strerror}")
             more_bing()
 
         # 任务完成后更新窗口
@@ -3736,7 +3750,7 @@ def set_w_bing(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-
+            print(f"错误: {e.strerror}")
             more_bing()
 
         # 任务完成后更新窗口
@@ -3817,7 +3831,7 @@ def copy_w_bing(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-
+            print(f"错误: {e.strerror}")
             more_bing()
 
         # 任务完成后更新窗口
@@ -3939,11 +3953,13 @@ class UpdateChecker:
             result = {"status": "error", "error_message": "未知错误"}
             try:
                 result = self.result_queue.get(timeout=self.timeout)
-            except queue.Empty:
+            except queue.Empty as e:
                 logging.error("更新检查超时")
+                print(f"错误: {e.strerror}")
                 result["error_message"] = "请求超时"
             except Exception as e:
                 logging.error(f"更新检查异常: {str(e)}")
+                print(f"错误: {e.strerror}")
                 result["error_message"] = str(e)
             finally:
                 if callback:
@@ -4091,6 +4107,7 @@ def load_home_page_data():
     except Exception as e:
         error_msg = f"下载图片时出错: {str(e)}"
         logging.error(error_msg)
+        print(f"错误: {e.strerror}")
         # 如果下载失败，删除临时文件
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
@@ -4156,6 +4173,7 @@ if cog.get_value("update.enabled"):
 
     except Exception as e:
         logging.error(f"更新检查失败：{e}")
+        print(f"错误: {e.strerror}")
         maliang.dialogs.TkMessage(icon="error",title="更新",message="更新检查失败",detail="未知错误\n详细错误信息请查看日志")
 
 else:
