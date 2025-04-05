@@ -12,7 +12,7 @@
 ---
 
 
-## Overview / 概述
+## Overview / 概述 ℹ️
 
 Little Tree Wallpaper is a versatile app designed to quickly change and download wallpapers from a variety of sources, including Bing, 360, and Wallhaven. ✨ In addition, it supports multiple interfaces that allow users to bookshop and automatically rotate their favorite wallpapers.
 
@@ -20,19 +20,23 @@ Little Tree Wallpaper is a versatile app designed to quickly change and download
 
 Stay tuned for more exciting features coming soon! 🎉
 
-如果您喜欢这个项目，不妨点个 ⭐️吧！
+敬请期待，更多激动人心的功能即将上线，我们将不断更新优化，为您带来更好的使用体验！🎉
 
-## Release Notes / 版本发行说明
+If you like this project, please give it a star! ⭐️
+
+如果您喜欢这个项目，不妨点个 ⭐️ 吧！
+
+## Release Notes / 版本发行说明 📋
 
 This project follows the versioning conventions of [Semantic Versioning 2.0.0](https://semver.org/). 📦
 
-本项目采用[语义化版本 2.0.0](https://semver.org/lang/zh-CN/)的版本命名规则。
+本项目采用[语义化版本 2.0.0](https://semver.org/lang/zh-CN/)的版本命名规则。📦
 
-## Special Thanks / 特别感谢
+## Special Thanks / 特别感谢 ❤️
 
 A special thanks to [Xiaokang2022](https://github.com/Xiaokang2022), the author of [maliang](https://github.com/Xiaokang2022/maliang), for their invaluable technical support! 🙏
 
-特别感谢项目[maliang](https://github.com/Xiaokang2022/maliang)的作者[Xiaokang2022](https://github.com/Xiaokang2022)对本项目的技术支持！
+特别感谢项目[maliang](https://github.com/Xiaokang2022/maliang)的作者[Xiaokang2022](https://github.com/Xiaokang2022)对本项目的技术支持！🙏
 
 ## Star History / Star 趋势 🌟
 
