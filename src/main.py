@@ -1848,9 +1848,15 @@ STYLE_CONFIG = {
                 "commands": {"<Button-1>": "setting"}
             },
             {
+                "type": "text",
+                "position": (75, 665),
+                "fontsize": 20,
+                "content": "设置"
+            },
+            {
                 "type": "icon_button",
                 "name": "关于按钮",
-                "position": (100, 670),
+                "position": (50, 600),
                 "size": (40, 53),
                 "symbol": "",
                 "fontsize": 43,
@@ -1859,15 +1865,27 @@ STYLE_CONFIG = {
                     "<Button-2>": "about",
                     "<Button-3>": "egg"
                 }
+            },            
+            {
+                "type": "text",
+                "position": (75, 595),
+                "fontsize": 20,
+                "content": "关于"
             },
             {
                 "type": "icon_button",
                 "name": "壁纸入口",
-                "position": (1230, 670),
+                "position": (1175, 670),
                 "size": (40, 50),
                 "symbol": "",
                 "fontsize": 40,
                 "commands": {"<Button-1>": "wallpaper"}
+            },            
+            {
+                "type": "text",
+                "position": (1200, 665),
+                "fontsize": 20,
+                "content": "壁纸源"
             },
             {
                 "type": "text",
@@ -1916,7 +1934,7 @@ STYLE_CONFIG = {
                             "command": "detail"
                         },
                         "text": {
-                            "position": (1170, 370),
+                            "position": (1140, 385),
                             "anchor": "n",
                             "content": "更多信息",
                             "fontsize": 20
