@@ -26,9 +26,9 @@
 # 功能: 导入库
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-import sys
 
 # 标准库
+import sys
 import queue
 import traceback
 import datetime
