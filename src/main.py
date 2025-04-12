@@ -45,6 +45,7 @@ import math
 import re
 import webbrowser
 import shutil
+import platform
 
 # 非标准库
 import pystray
@@ -67,15 +68,25 @@ from functools import lru_cache
 from importlib.util import find_spec
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# 模块: 启动检查
-# 功能: 检查系统环境并给出提示
+# 模块: 启动检查和环境处理
+# 功能: 检查系统环境并给出提示/导入库
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-if sys.platform == "win32" and find_spec("win32clipboard") is None:
-    print(Fore.RED + "缺少win32clipboard库，请安装后重试！" + Style.RESET_ALL)
-    maliang.dialogs.TkMessage("您当前使用的是Windows平台，但是您未安装pywin32库，请安装后重试！",title="小树壁纸-启动检查",icon="error")
-    sys.exit(1)
-
+if platform.system() == "Windows" and find_spec("win32clipboard") is None and find_spec("win32gui") is None and find_spec("win32api") is None and find_spec("win32con") is None:
+    print(Fore.RED + "[启动检查不通过]缺少pywin32库，请安装后重试！" + Style.RESET_ALL)
+    maliang.dialogs.TkMessage("您当前使用的是Windows平台，但是您未安装pywin32库，请安装后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
+if platform.system() == "Windows":
+    print(platform.win32_ver()[0])
+    if not (platform.win32_ver()[0] == "10" or platform.win32_ver()[0] == "11"):
+        print(Fore.RED + "[启动检查不通过]小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！" + Style.RESET_ALL)
+        maliang.dialogs.TkMessage("小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
+        sys.exit(1)
+if platform.system() == "Windows":
+    import win32gui
+    import win32con
+    import win32api
+    import win32clipboard
+print(Fore.GREEN + f"[启动检查通过]当前系统环境为{platform.system()} {platform.release()} {platform.version()}" + Style.RESET_ALL)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 库设置
@@ -570,7 +581,6 @@ def copy_image_to_clipboard(image_path) -> None:
         # 跨平台处理：根据操作系统选择合适的剪贴板操作
         if sys.platform == "win32":
             # Windows 平台使用 ImageGrab 和 Clipboard API
-            import win32clipboard
             from io import BytesIO
 
             output = BytesIO()
@@ -884,7 +894,15 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-logging.info(f"小树壁纸 | 当前版本: {VER} 内部版本: {INSIDE_VER} 构建版本: {BUILD_VER}")
+with open(LOG_FILE, 'w', encoding='utf-8') as f:
+    f.write(f"""{"-"*50}
+    小树壁纸日志信息
+    小树壁纸 | 当前版本: {VER} 内部版本: {INSIDE_VER} 构建版本: {BUILD_VER}
+    运行平台信息: {platform.platform()}
+    Python版本: {platform.python_version()}
+    日志文件: {LOG_FILE}
+{"-"*50}
+""")
 logging.info("日志初始化成功")
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -2301,7 +2319,117 @@ def index_window(*args):
             "type": "icon_button",
             **update_config
         })     
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 模块: 动态壁纸
+# 功能: 动态壁纸播放器
+# !目前仅适用于Windows10/11系统
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+if platform.system() == "Windows":
+    if platform.win32_ver()[1].split('.')[2] >= "26100":
+        
+
+        def get_monitors_info():
+            monitors = []
+            for monitor in win32api.EnumDisplayMonitors():
+                monitor_info = win32api.GetMonitorInfo(monitor[0])
+                rect = monitor_info["Monitor"]
+                work_area = monitor_info["Work"]
+                monitors.append({
+                    "left": rect[0],
+                    "top": rect[1],
+                    "width": rect[2] - rect[0],
+                    "height": rect[3] - rect[1],
+                    "work_area": work_area
+                    })
+            # 在get_monitors_info末尾添加：
+            print("[显示器配置]".center(40,'='))
+            for i, m in enumerate(monitors):
+                print(f"显示器{i}: {m['width']}x{m['height']} @ ({m['left']},{m['top']})")
+            print("="*40)
+
+            return monitors
+        def find_progman_window():
+            # 查找 Progman 窗口
+            return win32gui.FindWindow("Progman", None)
+
+        def send_message_to_progman(hwnd):
+            # 向 Progman 窗口发送特定消息
+            win32gui.SendMessageTimeout(hwnd, 0x052c, 0, 0, win32con.SMTO_NORMAL, 0x3e8)
+
+        def find_workerw_window(progman_hwnd):
+            return win32gui.FindWindowEx(progman_hwnd, 0, "WorkerW", None)
+
+        def find_shelldll_defview_window(progman_hwnd):
+            return win32gui.FindWindowEx(progman_hwnd, 0, "SHELLDLL_DefView", None)
+
+        def set_mpv_as_wallpaper(mpv_hwnd, workerw_hwnd, defview_hwnd):
+            # 设置 MPV 窗口的父窗口为 WorkerW 窗口
+            win32gui.SetParent(mpv_hwnd, workerw_hwnd)
+            # 让桌面图标层透明，先隐藏再显示SHELLDLL_DefView窗口使其重绘
+            win32gui.ShowWindow(defview_hwnd, win32con.SW_HIDE)
+            time.sleep(0.1)  
+            win32gui.ShowWindow(defview_hwnd, win32con.SW_SHOWNORMAL)
+
+        def play_video_as_wallpaper(video_path):
+            monitors = get_monitors_info()
+            processes = []
+            
+            for idx, monitor in enumerate(monitors):
+                # 为每个显示器创建独立进程
+                cmd = [
+                    'mpv', '--title=MPV-{}'.format(idx),
+                    '--no-border',
+                    '--loop=inf',
+                    '--fs',
+                    '--geometry={}x{}+{}+{}'.format(
+                        monitor['width'],
+                        monitor['height'],
+                        monitor['left'],
+                        monitor['top']
+                    ),
+                    video_path
+                ]
+                processes.append(subprocess.Popen(cmd))
+            
+            time.sleep(len(monitors) * 0.5)  # 增加等待时间
+
+            # 窗口处理逻辑（需要循环处理每个显示器）
+            for idx in range(len(monitors)):
+                # 在窗口重定位处添加：
+                print(f"显示器{idx}，目标坐标: ({monitor['left']}, {monitor['top']})")
+                mpv_hwnd = win32gui.FindWindow(None, f"MPV-{idx}")
+
+                # 查找 Progman 窗口
+                progman_hwnd = find_progman_window()
+
+                if not progman_hwnd:
+                    print("未能找到Progman窗口。")
+                    return
+
+                # 向 Progman 窗口发送特定消息
+                send_message_to_progman(progman_hwnd)
+
+                # 查找 WorkerW 窗口
+                workerw_hwnd = find_workerw_window(progman_hwnd)
+
+                # 查找 SHELLDLL_DefView 窗口
+                defview_hwnd = find_shelldll_defview_window(progman_hwnd)
+
+                if mpv_hwnd and workerw_hwnd and defview_hwnd:
+                    # 设置 MPV 窗口的父窗口为 WorkerW 窗口，并处理图标层透明
+                    set_mpv_as_wallpaper(mpv_hwnd, workerw_hwnd, defview_hwnd)
+                else:
+                    print("未能找到 MPV 窗口、WorkerW 窗口或SHELLDLL_DefView窗口。")
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 模块: 调试面板
+# 功能: 开关调试模式/测试部分功能
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+def show_debug_panel():
+    debug_root = maliang.Toplevel(root,title=f"小树壁纸 调试面板 | {VER}+{BUILD_VER} ({INSIDE_VER})")
+
+    
+    debug_root.mainloop()
 
 ### ✨ 设置面板
 canvas_setting = maliang.Canvas(root, auto_zoom=True, keep_ratio="min", free_anchor=True)
@@ -2680,22 +2808,26 @@ def change_setting_page(page):
             maliang.Text(canvas_setting_pages, (10, 10), text="更新", fontsize=30, anchor="nw", weight="bold")
             maliang.Text(canvas_setting_pages, (10, 300), text="启动时自动检查更新：", fontsize=20, anchor="nw")
             maliang.Switch(canvas_setting_pages, (210, 300), command=lambda s: (cog.set_value("update.enabled", s), logging.info(f"启动时自动检查更新: {s}")), default=cog.get_value("update.enabled"))
+            debug_mode_button = maliang.Button(canvas_setting_pages, (430, 340), text="调试面板",command=lambda: show_debug_panel())
             maliang.Text(canvas_setting_pages, (10, 350), text="更新通道", fontsize=20, anchor="nw")
             def change_update_channel(channel):
                 if channel == 0:
                     dev_warning.forget()
                     cog.set_value("update.channel", "Stable")
                     logging.info("用户选择的更新通道: Stable")
+                    debug_mode_button.forget()
                 else:
                     dev_warning.forget(False)
                     # maliang.dialogs.TkMessage(icon="warning", title="警告", message="开发版功能可能不稳定或存在问题，请谨慎使用！", detail="请不要在生产环境中使用开发版功能！")
                     cog.set_value("update.channel", "Dev")
                     logging.info("用户选择的更新通道: Dev")
+                    debug_mode_button.forget(False)
             dev_warning=maliang.Text(canvas_setting_pages, (10, 550), text="开发版功能可能不稳定或存在问题，请谨慎使用！", fontsize=17, anchor="nw")
             choose_update_channel=maliang.ComboBox(canvas_setting_pages, (110, 340),(300,40) ,text=["Stable(稳定版，推荐)", "Dev(开发版)"], command=lambda s: change_update_channel(s))
             if cog.get_value("update.channel") == "Stable":
                 choose_update_channel.set(0)
                 dev_warning.forget()
+                debug_mode_button.forget()
             elif cog.get_value("update.channel") == "Dev":
                 choose_update_channel.set(1)
             if is_checked_update:
