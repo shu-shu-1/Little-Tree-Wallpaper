@@ -2337,26 +2337,14 @@ if platform.system() == "Windows":
                     "height": rect[3] - rect[1],
                     "work_area": work_area
                     })
-            # 在get_monitors_info末尾添加：
-            print("[显示器配置]".center(40,'='))
+            
+
             for i, m in enumerate(monitors):
-                print(f"显示器{i}: {m['width']}x{m['height']} @ ({m['left']},{m['top']})")
-            print("="*40)
+                logging.info(f"检查到显示器: 显示器{i}: {m['width']}x{m['height']} @ ({m['left']},{m['top']})")
 
             return monitors
-        def find_progman_window():
-            # 查找 Progman 窗口
-            return win32gui.FindWindow("Progman", None)
 
-        def send_message_to_progman(hwnd):
-            # 向 Progman 窗口发送特定消息
-            win32gui.SendMessageTimeout(hwnd, 0x052c, 0, 0, win32con.SMTO_NORMAL, 0x3e8)
 
-        def find_workerw_window(progman_hwnd):
-            return win32gui.FindWindowEx(progman_hwnd, 0, "WorkerW", None)
-
-        def find_shelldll_defview_window(progman_hwnd):
-            return win32gui.FindWindowEx(progman_hwnd, 0, "SHELLDLL_DefView", None)
 
         def set_mpv_as_wallpaper(mpv_hwnd, workerw_hwnd, defview_hwnd):
             # 设置 MPV 窗口的父窗口为 WorkerW 窗口
@@ -2396,20 +2384,20 @@ if platform.system() == "Windows":
                 mpv_hwnd = win32gui.FindWindow(None, f"MPV-{idx}")
 
                 # 查找 Progman 窗口
-                progman_hwnd = find_progman_window()
+                progman_hwnd = win32gui.FindWindow("Progman", None)
 
                 if not progman_hwnd:
                     print("未能找到Progman窗口。")
                     return
 
                 # 向 Progman 窗口发送特定消息
-                send_message_to_progman(progman_hwnd)
+                win32gui.SendMessageTimeout(progman_hwnd, 0x052c, 0, 0, win32con.SMTO_NORMAL, 0x3e8)
 
                 # 查找 WorkerW 窗口
-                workerw_hwnd = find_workerw_window(progman_hwnd)
+                workerw_hwnd = win32gui.FindWindowEx(progman_hwnd, 0, "WorkerW", None)
 
                 # 查找 SHELLDLL_DefView 窗口
-                defview_hwnd = find_shelldll_defview_window(progman_hwnd)
+                defview_hwnd = win32gui.FindWindowEx(progman_hwnd, 0, "SHELLDLL_DefView", None)
 
                 if mpv_hwnd and workerw_hwnd and defview_hwnd:
                     # 设置 MPV 窗口的父窗口为 WorkerW 窗口，并处理图标层透明
