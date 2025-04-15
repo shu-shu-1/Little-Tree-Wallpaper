@@ -103,7 +103,7 @@ configs.Font.size = -24 #? 设置字体大小
 # 功能: 定义一些常量
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-DEBUG_MODE = True #?是否开启调试模式 
+DEBUG_MODE = True #?是否开启调试模式
 DEBUG_MODE_NO_LOADING_IMAGE = False #?是否不加载图片
 
 VER = "v6.0.0-rc.2" #? 主版本号
@@ -114,7 +114,7 @@ IS_PUBLIC = False #? 是否为公开版本
 IS_TEST_VERSION = True #? 是否为测试版本
 
 #? 下载 UserAgent(UA) 设置
-UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0"
 
 #? 日志设置
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - [行:%(lineno)d] - [消息]%(message)s" #? 日志格式
@@ -147,14 +147,14 @@ is_load_index_wallpaper_detail: bool = False #? 是否已经加载壁纸详情�
 
 update_check_result: dict = None #? 检查更新结果
 
-API_Core: dict = { 
+API_Core: dict = {
     "Wallpaper":{
         "Bing" : "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=7&mkt=zh-CN",
         "Spotlight" : "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=4&country=zh&locale=zh-cn&fmt=json",
     },
     "Update":{
         "Update 1" : "https://raw.kkgithub.com/shu-shu-1/API/main/xiaoshu%20wallpaper/v2/update.json",
-        "Update 2" : "https://fastly.jsdelivr.net/gh/shu-shu-1/API@main/xiaoshu%20wallpaper/v2/update.json",        
+        "Update 2" : "https://fastly.jsdelivr.net/gh/shu-shu-1/API@main/xiaoshu%20wallpaper/v2/update.json",
     },
     "Web":{
         "Bing_test" : "https://www.bing.com/hp/api/v1/trivia",
@@ -221,7 +221,7 @@ elif IS_TEST_VERSION:
     print(f"{Fore.YELLOW}当前是{Style.RESET_ALL}{Fore.RED}内部未公开{Style.RESET_ALL}{Fore.YELLOW}的开发版本，请谨慎使用！")
     print(f"{Fore.YELLOW}内部测试版本不能代表最终品质，请勿外泄，请以正式版为准！")
     print(f"{Fore.YELLOW}-----------------------------------------------")
-    print(f"{Style.RESET_ALL}")    
+    print(f"{Style.RESET_ALL}")
 if not IS_PUBLIC:
     maliang.dialogs.TkMessage(title="警告", message="当前是内部测试版本，请勿外泄，请以正式版为准！", icon="warning", option="ok")
 if not DEBUG_MODE:
@@ -246,7 +246,7 @@ def new_folder(folder_name: str) -> None:
     if os.path.exists(folder_name):
         logging.info(f"文件夹“{folder_name}”已存在")
         return
-    else: 
+    else:
         os.makedirs(folder_name)
         logging.info(f"创建文件夹“{folder_name}”成功")
 
@@ -387,7 +387,7 @@ def get_folder_size(folder_path) -> int:
             file_path = os.path.join(dirpath, filename)
             if os.path.isfile(file_path):
                 total_size += os.path.getsize(file_path)
-    return total_size / (1024 * 1024) 
+    return total_size / (1024 * 1024)
 def run_installer(installer_path) -> None:
     """
     运行安装程序。
@@ -434,7 +434,7 @@ def resize_image(image_path: str, new_height: int) -> maliang.PhotoImage:
     Example:
         >>> img = resize_image("wallpaper.jpg", 600)
         >>> canvas.draw_image(img, 0, 0)
-    
+
     Note:
         实际输出宽度为原始宽高比乘以目标高度的计算结果（向下取整）
         建议目标高度不超过原图高度的10倍以防止过度插值
@@ -442,20 +442,20 @@ def resize_image(image_path: str, new_height: int) -> maliang.PhotoImage:
     # 参数校验
     if new_height <= 0:
         raise ValueError("目标高度必须为正值")
-    
+
     # 打开图片并获取尺寸
     original_image = Image.open(image_path)
     width, height = original_image.size
-    
+
     # 计算等比缩放后的宽度
     new_width = int(width * new_height / height)
-    
+
     # 执行缩放操作
     resized_image = original_image.resize(
         (new_width, new_height),
         resample=Image.Resampling.LANCZOS
     )
-    
+
     return maliang.PhotoImage(resized_image)
 
 def copy_and_set_wallpaper(image_path,*args) -> None:
@@ -465,7 +465,7 @@ def copy_and_set_wallpaper(image_path,*args) -> None:
     Args:
         image_path (str): 图片路径
         *args: 可选参数，用于传递给set_wallpaper函数
-    
+
     Returns:
         None
     """
@@ -520,14 +520,14 @@ def compare_versions(version1, version2) -> int:
     def compare_identifiers(a, b):
         a_is_num = isinstance(a, int)
         b_is_num = isinstance(b, int)
-        
+
         if a_is_num and b_is_num:
             return (a > b) - (a < b)
         if a_is_num:
-            return -1 
+            return -1
         if b_is_num:
-            return 1   
-        return (a > b) - (a < b)  
+            return 1
+        return (a > b) - (a < b)
 
     v1_core = parse_core_version(version1)
     v2_core = parse_core_version(version2)
@@ -541,7 +541,7 @@ def compare_versions(version1, version2) -> int:
     if v1_pre is None and v2_pre is None:
         return 0
     if v1_pre is None:
-        return 1  
+        return 1
     if v2_pre is None:
         return -1
 
@@ -618,12 +618,12 @@ def copy_image_to_clipboard(image_path) -> None:
 
     except Exception as e:
         logging.error(f"复制图片到剪贴板失败: {e}")
-        
+
 
 
 def get_my_pictures_path() -> str:
     """
-    获取用户图片文件夹路径。  
+    获取用户图片文件夹路径。
 
     Returns:
         str: 用户图片文件夹路径。
@@ -657,9 +657,9 @@ def get_my_pictures_path() -> str:
                 return os.path.expanduser("~/Pictures")
         except Exception as e:
             logging.error(f"Linux 平台未知错误: {e}")
-            
+
             maliang.dialogs.TkMessage(
-                icon="error", 
+                icon="error",
                 title="路径错误",
                 message="无法确定图片目录",
                 detail="请检查是否安装 xdg-utils 或设置环境变量"
@@ -690,7 +690,7 @@ def get_my_pictures_path() -> str:
             raise
         except Exception as e:
             logging.error(f"未知错误: {e}")
-            
+
             maliang.dialogs.TkMessage(
                 icon="error",
                 title="系统错误",
@@ -713,13 +713,13 @@ def determine_image_format(image_path: str) -> str:
             return format
     except IOError:
         logging.error(f"无法打开图片文件: {image_path}")
-        
+
         return None
 
 def change_file_extension(file_path, new_extension):
     """
     更改给定文件路径的文件扩展名。
-    
+
     :param file_path: 文件的完整路径
     :param new_extension: 新的扩展名（包括点，例如 '.jpg'）
     :return: 更改后的文件路径
@@ -739,9 +739,9 @@ def change_file_extension(file_path, new_extension):
         return new_file_path
     except OSError as e:
         logging.error(f"无法重命名文件: {e}")
-        
+
         return None
-    
+
 def clean_filename(filename):
     """
     清理文件名中的无效字符。
@@ -837,7 +837,7 @@ def get_spotlight_image() -> list:
         for item in response.json()['batchrsp']['items']:
             item_data = json.loads(item['item'])  # 再次解析 item
             ad_data = item_data['ad']
-            
+
             landscape_image = ad_data['landscapeImage']['asset']
             portrait_image = ad_data['portraitImage']['asset']
             title = ad_data['title']
@@ -1029,7 +1029,7 @@ class WallpaperScriptEngine:
 
             # 解析range参数
             range_args = self._parse_args(range_args_str)
-            
+
             # 根据参数数量生成range参数
             if len(range_args) == 1:
                 start, end, step = 0, range_args[0], 1
@@ -1064,7 +1064,7 @@ def script_thread(script):
         )
     except Exception as e:
         logging.error(f"[脚本线程 | ID{threading.get_ident()}] 脚本执行错误: {e}")
-        
+
         notification.notify(
             title="脚本执行错误",
             message=f"错误详情：{str(e)}",
@@ -1075,7 +1075,7 @@ class ScriptAPI:
     """提供给脚本引擎的API接口"""
     def set_wallpaper(self, url):
         return set_wallpaper(url)
-    
+
     def download_file(self, url, path = None, file_name = None):
         if not path:
             path = os.path.join(os.getcwd(), "temp")
@@ -1083,15 +1083,15 @@ class ScriptAPI:
             return download_file(url, path, file_name)
         try:
             file_path = extract_filename(path)
-            
+
             if file_path[1]:
 
                 print(file_path)
                 return download_file(url, file_path[0], file_path[1])
-            
+
             return download_file(url, path)
         except Exception:
-            
+
             return download_file(url, path)
 
 
@@ -1139,7 +1139,7 @@ def command_line_debug_tool():
                     if '状态码' in result:
                         print(f"    状态码: {result['状态码']}")
                     if '错误' in result:
-                        print(f"    错误: {result['错误']}")            
+                        print(f"    错误: {result['错误']}")
         elif user_input.startswith("ssp"):
             start_panel()
         elif user_input.startswith("theme"):
@@ -1206,7 +1206,7 @@ if os.path.exists(CONFIG_PATH) is not True:
             logging.info("创建配置文件目录成功")
         except Exception as e:
             logging.error(f"创建配置文件目录失败, 错误: {e}")
-            
+
             maliang.dialogs.TkMessage(icon="error",title="严重错误：创建配置文件目录失败",message="详细错误信息请查看日志",detail="你可以向作者反馈此问题")
             webbrowser.open("https://github.com/shu-shu-1/Xiaoshu-Wallpaper/issues/new?labels=bug")
             os._exit(0)
@@ -1222,7 +1222,7 @@ else:
         cog = ltwpAPI.config.ConfigManager(CONFIG_PATH)
     except Exception as e:
         logging.error(f"载入配置文件失败, 错误: {e}")
-        
+
         maliang.dialogs.TkMessage(icon="error",title="严重错误：载入配置文件失败",message="详细错误信息请查看日志",detail="你可以向作者反馈此问题(前提是你未手动修改配置文件)或删除配置文件")
         webbrowser.open("https://github.com/shu-shu-1/Xiaoshu-Wallpaper/issues/new?labels=bug")
         os._exit(0)
@@ -1271,26 +1271,26 @@ def clean_page():
 def test_info():
     canvas_loading.place_forget()
     canvas_test.place(width=1280, height=720, x=640, y=360, anchor="center")
-    
+
 def egg():
     # maliang.dialogs.TkMessage(icon="info",title="彩蛋",message="你发现了一个彩蛋！",detail="你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！")
     canvas_index.delete("all")
-    
+
     canvas_index.place_forget()
     canvas_egg.place(width=1280, height=720, x=640, y=360, anchor="center")
 
 def wallpaper():
     wallpaper_wallhaven()
     canvas_index.delete("all")
-    
+
     canvas_index.place_forget()
     canvas_wallpaper_detail.place_forget()
     canvas_wallpaper.place(width=1280, height=720, x=640, y=360, anchor="center")
-    
+
 
 def setting():
     canvas_index.delete("all")
-    
+
     canvas_index.place_forget()
     canvas_setting.place(width=1280, height=720, x=640, y=360, anchor="center")
 
@@ -1302,7 +1302,7 @@ def setting():
 def about():
     canvas_index.delete("all")
     canvas_index.place_forget()
-    
+
     canvas_about.place(width=1280, height=720, x=640, y=360, anchor="center")
     canvas_about.update_idletasks()
     canvas_about.zoom()
@@ -1315,7 +1315,7 @@ def more_bing(*args):
     canvas_download.delete("all")
     canvas_download.place_forget()
     canvas_index.delete("all")
-    canvas_index.place_forget() 
+    canvas_index.place_forget()
     # canvas_detail.update_idletasks()
     # canvas_detail.zoom()
     # canvas_index._zoom_children()
@@ -1329,7 +1329,7 @@ def main():
     canvas_index.destroy()
     canvas_index = maliang.Canvas(root, auto_zoom=True, keep_ratio="min", free_anchor=True)
     # canvas_index.zoom()
-    
+
     index_window()
     # canvas_index.zoom()
     canvas_index.place(x=0, y=-720, width=1280, height=720)
@@ -1345,7 +1345,7 @@ def main():
     canvas_wallpaper.place_forget()
     canvas_wallpaper_detail.place_forget()
     canvas_wallpaper_more_360_download.pack_forget()
-    
+
     # canvas_index.update_idletasks()
     # canvas_index.zoom()
 ### ✨ 测试信息
@@ -1380,7 +1380,7 @@ def fetch_latest_release(
     ]
 ):
     """检查软件更新，支持多API端点轮询
-    
+
     Args:
         ty: 更新渠道类型
         api_endpoints: 可自定义的API端点列表，按顺序尝试直至成功
@@ -1444,7 +1444,7 @@ def fetch_latest_release(
     except KeyError as e:
         error_msg = f"JSON字段解析失败: {str(e)}"
         logging.error(error_msg)
-        
+
         return {
             "status": "error",
             "error_message": error_msg
@@ -1452,7 +1452,7 @@ def fetch_latest_release(
     except Exception as e:
         error_msg = f"未知错误: {str(e)}"
         logging.error(error_msg)
-        
+
         return {
             "status": "error",
             "error_message": error_msg
@@ -1484,9 +1484,9 @@ def download_file(url, folder='./temp', manual_filename=None):
             os.makedirs(folder)
     except Exception as e:
         logging.error(f"创建下载目录失败: {e}")
-        
+
         return None
-    
+
     # 创建一个会话
     session = requests.Session()
     # 设置自定义User-Agent
@@ -1542,13 +1542,13 @@ def download_file(url, folder='./temp', manual_filename=None):
         with open(file_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
-        
+
         logging.info(f"文件已成功下载并保存为 {file_path}".replace("\\","/"))
         return file_path.replace("\\","/")
 
     except requests.exceptions.RequestException as e:
         logging.error(f"下载文件时出错: {e}")
-        
+
         return None
 
 def ssp_bing_loading():
@@ -1570,7 +1570,7 @@ def ssp_bing_loading():
         bing_loading_text.forget()
     except Exception as e:
         logging.error(f"加载Bing壁纸失败：{e}")
-        
+
         bing_loading_text.set("加载出现错误，请查看日志了解详情。")
     # spotlight_data=get_spotlight_image()
 def ssp_spotlight_loading():
@@ -1593,7 +1593,7 @@ def ssp_spotlight_loading():
         spotlight_loading_text.set("加载中...4/5")
         spotlight_img_temp3=download_file(spotlight_data[2]["url"], manual_filename="spotlight3")
         occupied_file_list.append(spotlight_img_temp3)
-        spotlight_img_view3=maliang.Image(canvas_ssp, (25,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp3)).scale_by_size(new_height=110))))      
+        spotlight_img_view3=maliang.Image(canvas_ssp, (25,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp3)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片3下载成功")
         spotlight_loading_text.set("加载中...5/5")
         spotlight_img_temp4=download_file(spotlight_data[3]["url"], manual_filename="spotlight4")
@@ -1605,7 +1605,7 @@ def ssp_spotlight_loading():
         spotlight_loading_text.forget()
     except Exception as e:
         logging.error(f"加载Spotlight壁纸失败：{e}")
-        
+
         spotlight_loading_text.set("加载出现错误，请查看日志了解详情。")
 def show_root():
     root.deiconify()
@@ -1623,11 +1623,11 @@ def ssp():
     # 获取屏幕宽度和高度
     screen_width = root.winfo_screenwidth()
     # screen_height = panel.winfo_screenheight()
-    
+
     # 设置窗口宽度和高度
     window_width = 450
     window_height = 650
-    
+
     # 计算窗口右上角的位置
     x_position = screen_width - window_width - 40
     y_position = 20
@@ -1650,7 +1650,7 @@ def ssp():
         panel.deiconify()
     def open_bing_detail():
         if is_load_main:
-            
+
             clean_page()
             more_bing()
             root.deiconify()
@@ -1661,13 +1661,13 @@ def ssp():
     menu = (
         pystray.MenuItem('显示主窗口', show_root, default=True),
         pystray.MenuItem('显示快捷面板', show_panel),
-        pystray.Menu.SEPARATOR,  
+        pystray.Menu.SEPARATOR,
         pystray.MenuItem('退出', lambda: os._exit(0)))
     threading.Thread(target=pystray.Icon("icon", Image.open(cog.get_value("display.window_icon_path")), "小树壁纸", menu).run, daemon=True).start()
-    
+
     canvas_ssp = maliang.Canvas(panel, auto_zoom=True, keep_ratio="min", free_anchor=True)
     canvas_ssp.place(width=470, height=800, x=0, y=0, anchor="nw")
-    
+
     maliang.Text(canvas_ssp, (20, 20), text="快捷面板", family="MiSans", fontsize=25)
     maliang.Text(canvas_ssp, (20, 60), text="Bing每日壁纸", family="MiSans", fontsize=20)
     bing_loading_text = maliang.Text(canvas_ssp, (150, 65), text="加载中...", family="MiSans", fontsize=15)
@@ -1878,7 +1878,7 @@ STYLE_CONFIG = {
                     "<Button-2>": "about",
                     "<Button-3>": "egg"
                 }
-            },            
+            },
             {
                 "type": "text",
                 "position": (75, 595),
@@ -1893,7 +1893,7 @@ STYLE_CONFIG = {
                 "symbol": "",
                 "fontsize": 40,
                 "commands": {"<Button-1>": "wallpaper"}
-            },            
+            },
             {
                 "type": "text",
                 "position": (1200, 665),
@@ -1963,7 +1963,7 @@ def create_ui_element(parent, element_config):
     """支持多行文本和深度锚点配置的UI元素创建"""
     try:
         elem_type = element_config.get("type")
-        
+
         # 文本元素处理
         if elem_type == "text":
             # 公共配置解析
@@ -1972,7 +1972,7 @@ def create_ui_element(parent, element_config):
             global_justify = element_config.get("justify")
             fontsize = element_config.get("fontsize", 12)
             weight = element_config.get("weight", "normal")
-                    
+
             # 智能推断对齐方式
             if not global_justify:
                 anchor = element_config.get("anchor", "center")
@@ -1982,7 +1982,7 @@ def create_ui_element(parent, element_config):
                     "n": "center", "s": "center", "center": "center"
                 }
                 global_justify = justify_defaults.get(anchor, "left")
-            
+
             maliang.Text(
                 parent,
                 base_position,
@@ -1996,7 +1996,7 @@ def create_ui_element(parent, element_config):
                 justify=global_justify,
                 weight=weight
             )
-                
+
 
 
         # 图标按钮处理
@@ -2014,7 +2014,7 @@ def create_ui_element(parent, element_config):
                 height=element_config["size"][1],
                 anchor=element_config.get("anchor", "center")
             )
-            
+
             # 图标绘制
             vertical_offset = 10 if element_config["size"][1] >= 50 else 4
             maliang.Text(
@@ -2025,17 +2025,17 @@ def create_ui_element(parent, element_config):
                 family="Segoe Fluent lcons",
                 anchor="nw"
             )
-            
+
             # 事件绑定
             for event, command in element_config.get("commands", {}).items():
                 canvas.bind(event, lambda e, cmd=command: COMMAND_MAP[cmd]())
-        
+
         # 图片面板处理
         elif elem_type == "image_panel":
             # 主图片处理
             img_config = element_config.get("content", {})
             main_img_config = img_config.get("main_image", {})
-            
+
             # 根据配置选择裁剪或缩放
             if main_img_config.get("crop", True):
                 img = process_image(home_page_assets_path)
@@ -2044,7 +2044,7 @@ def create_ui_element(parent, element_config):
                     home_page_assets_path,
                     target_size=main_img_config.get("target_size")
                 )
-            
+
             # 绘制主图片
             maliang.Image(
                 parent,
@@ -2052,7 +2052,7 @@ def create_ui_element(parent, element_config):
                 image=img,
                 anchor=element_config.get("anchor", "center")
             )
-            
+
             # 信息区块
             info_config = img_config.get("info")
             if info_config:
@@ -2068,7 +2068,7 @@ def create_ui_element(parent, element_config):
                         anchor=line.get("anchor", info_config["anchor"]),
                         weight=line.get("weight", info_config.get("weight", "normal")),
                     )
-            
+
             # 版权信息
             copyright_config = img_config.get("copyright")
             if copyright_config:
@@ -2081,7 +2081,7 @@ def create_ui_element(parent, element_config):
                     fontsize=copyright_config.get("fontsize", 12),
                     anchor=copyright_config.get("anchor", "nw")
                 )
-            
+
             # 更多信息区块
             more_info_config = img_config.get("more_info")
             if more_info_config:
@@ -2105,10 +2105,10 @@ def create_ui_element(parent, element_config):
                         anchor="nw"
                     )
                     icon_canvas.bind(
-                        "<Button-1>", 
+                        "<Button-1>",
                         lambda e: COMMAND_MAP[icon_config.get("command", "more_bing")]()
                     )
-                
+
                 # 文本部分
                 text_config = more_info_config.get("text")
                 if text_config:
@@ -2119,7 +2119,7 @@ def create_ui_element(parent, element_config):
                         fontsize=text_config["fontsize"],
                         anchor=text_config.get("anchor", "n")
                     )
-            
+
         # 图标按钮
         elif elem_type == "icon_button":
             canvas = maliang.Canvas(
@@ -2135,7 +2135,7 @@ def create_ui_element(parent, element_config):
                 height=element_config["size"][1],
                 anchor=element_config.get("anchor", "center")
             )
-            
+
             # 图标绘制
             vertical_offset = 10 if element_config["size"][1] >= 50 else 4
             maliang.Text(
@@ -2146,17 +2146,17 @@ def create_ui_element(parent, element_config):
                 family="Segoe Fluent lcons",
                 anchor="nw"
             )
-            
+
             # 事件绑定
             for event, command in element_config.get("commands", {}).items():
                 canvas.bind(event, lambda e, cmd=command: COMMAND_MAP[cmd]())
-        
+
         # 增强型图片面板
         elif elem_type == "image_panel":
             # 主图片处理
             img_config = element_config.get("content", {})
             main_img_config = img_config.get("main_image", {})
-            
+
             # 根据配置选择裁剪或缩放
             if main_img_config.get("crop", True):
                 img = process_image(home_page_assets_path)
@@ -2165,7 +2165,7 @@ def create_ui_element(parent, element_config):
                     home_page_assets_path,
                     target_size=main_img_config.get("target_size")
                 )
-            
+
             # 绘制主图片
             maliang.Image(
                 parent,
@@ -2173,7 +2173,7 @@ def create_ui_element(parent, element_config):
                 image=img,
                 anchor=element_config.get("anchor", "center")
             )
-            
+
             # 信息区块
             info_config = img_config.get("info")
             if info_config:
@@ -2189,7 +2189,7 @@ def create_ui_element(parent, element_config):
                         anchor=line.get("anchor", info_config["anchor"]),
                         weight=line.get("weight", "normal")
                     )
-            
+
             # 版权信息
             copyright_config = img_config.get("copyright")
             if copyright_config:
@@ -2202,7 +2202,7 @@ def create_ui_element(parent, element_config):
                     fontsize=copyright_config.get("fontsize", 12),
                     anchor=copyright_config.get("anchor", "nw")
                 )
-            
+
             # 更多信息区块
             more_info_config = img_config.get("more_info")
             if more_info_config:
@@ -2226,10 +2226,10 @@ def create_ui_element(parent, element_config):
                         anchor="nw"
                     )
                     icon_canvas.bind(
-                        "<Button-1>", 
+                        "<Button-1>",
                         lambda e: COMMAND_MAP[icon_config.get("command", "more_bing")]()
                     )
-                
+
                 # 文本部分
                 text_config = more_info_config.get("text")
                 if text_config:
@@ -2240,10 +2240,10 @@ def create_ui_element(parent, element_config):
                         fontsize=text_config["fontsize"],
                         anchor=text_config.get("anchor", "n")
                     )
-    
+
     except Exception as e:
         logging.error(f"UI元素创建失败: {str(e)}")
-        
+
         traceback.print_exc()
 
 # 优化后的图片处理函数（支持动态锚点）
@@ -2252,37 +2252,37 @@ def process_image(image_path, target_size=None, crop_area=None):
     """支持多种处理模式的图片处理"""
     try:
         img = Image.open(image_path)
-        
+
         if target_size:  # 缩放模式
             img.thumbnail(target_size, Image.Resampling.LANCZOS)
             return maliang.PhotoImage(img)
-        
+
         if crop_area:  # 自定义裁剪
             return maliang.PhotoImage(img.crop(crop_area))
-        
+
         # 默认裁剪逻辑
         width, height = img.size
         left = (width - (width // 2 - 10)) // 2
         upper = max((height - 300) // 2, 0)
         return maliang.PhotoImage(img.crop((
-            left, 
-            upper, 
-            left + width//2 + 10, 
+            left,
+            upper,
+            left + width//2 + 10,
             upper + 200
         )))
-    
+
     except Exception as e:
         logging.error(f"图片处理失败: {str(e)}")
-        
+
         return maliang.PhotoImage(Image.new('RGB', (100, 100), color='gray'))
 
 def index_window(*args):
     global is_load_main
     is_load_main = True
-    
+
     current_style = cog.get_value("home_page.style")
     config = STYLE_CONFIG.get(current_style, STYLE_CONFIG["default"])
-    
+
     # 加载背景
     bg_config = config["background"]
     if bg_config["enable"] and cog.get_value("display.window_background_image_path"):
@@ -2296,11 +2296,11 @@ def index_window(*args):
             image=bg_image,
             anchor=bg_config["anchor"]
         )
-    
+
     # 创建所有UI元素
     for element in config["elements"]:
         create_ui_element(canvas_index, element)
-    
+
     # 更新提示
     if is_have_update:
         update_config = {
@@ -2313,7 +2313,7 @@ def index_window(*args):
         create_ui_element(canvas_index, {
             "type": "icon_button",
             **update_config
-        })     
+        })
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 动态壁纸
 # 功能: 动态壁纸播放器
@@ -2322,7 +2322,7 @@ def index_window(*args):
 
 if platform.system() == "Windows":
     if platform.win32_ver()[1].split('.')[2] >= "26100":
-        
+
 
         def get_monitors_info():
             monitors = []
@@ -2337,7 +2337,7 @@ if platform.system() == "Windows":
                     "height": rect[3] - rect[1],
                     "work_area": work_area
                     })
-            
+
 
             for i, m in enumerate(monitors):
                 logging.info(f"检查到显示器: 显示器{i}: {m['width']}x{m['height']} @ ({m['left']},{m['top']})")
@@ -2351,13 +2351,13 @@ if platform.system() == "Windows":
             win32gui.SetParent(mpv_hwnd, workerw_hwnd)
             # 让桌面图标层透明，先隐藏再显示SHELLDLL_DefView窗口使其重绘
             win32gui.ShowWindow(defview_hwnd, win32con.SW_HIDE)
-            time.sleep(0.1)  
+            time.sleep(0.1)
             win32gui.ShowWindow(defview_hwnd, win32con.SW_SHOWNORMAL)
 
         def play_video_as_wallpaper(video_path):
             monitors = get_monitors_info()
             processes = []
-            
+
             for idx, monitor in enumerate(monitors):
                 # 为每个显示器创建独立进程
                 cmd = [
@@ -2374,7 +2374,7 @@ if platform.system() == "Windows":
                     video_path
                 ]
                 processes.append(subprocess.Popen(cmd))
-            
+
             time.sleep(len(monitors) * 0.5)  # 增加等待时间
 
             # 窗口处理逻辑（需要循环处理每个显示器）
@@ -2411,7 +2411,7 @@ if platform.system() == "Windows":
 def show_debug_panel():
     debug_root = maliang.Toplevel(root,title=f"小树壁纸 调试面板 | {VER}+{BUILD_VER} ({INSIDE_VER})")
 
-    
+
     debug_root.mainloop()
 
 ### ✨ 设置面板
@@ -2501,7 +2501,7 @@ def change_setting_page(page):
 
             # light_mode_choose=maliang.SegmentedButton(canvas_setting_pages, [20, 170], text=["国行公祭","欢庆春节","清明祭扫","中秋月下","粉花春色","原木秋色","粉雕玉琢","黄昏蓝调"], layout="horizontal", command=change_light_theme)
             # if changed_light_theme:
-                
+
             #     light_mode_choose.set(["国行公祭","欢庆春节","清明祭扫","中秋月下","粉花春色","原木秋色","粉雕玉琢","黄昏蓝调"].index(style.get_theme_map()["light"].__name__))
             # def reset_theme_map():
             #     global changed_dark_theme,changed_light_theme
@@ -2528,14 +2528,14 @@ def change_setting_page(page):
             maliang.Text(canvas_setting_pages, (30, 190), text="⚠️ 当前功能暂时无法使用", fontsize=25, anchor="nw")
 
             maliang.Text(canvas_setting_pages, (10, 260), text="自定义特殊效果模式(部分仅限深色模式)  - 实验性功能", fontsize=20, anchor="nw")
-            
+
             def change_dark_theme(index):
                 global changed_dark_theme,dark_theme_map
                 maliang.dialogs.TkMessage(icon="warning", title="小树壁纸-警告", message="此功能为实验性功能，可能存在一些问题，请谨慎使用！")
                 changed_dark_theme=True
                 match index:
 
- 
+
                     case 1:
                         color_mode_switch.set(True)
                         theme.set_color_mode("dark")
@@ -2551,7 +2551,7 @@ def change_setting_page(page):
                         theme.set_color_mode("dark")
                         theme.apply_theme(window=root,theme=("normal", "acrylic", "aero", "transparent","optimised", "win7", "inverse", "native", "popup", "mica")[index])
 
-                        theme.set_color_mode("dark")   
+                        theme.set_color_mode("dark")
                     case 3:
                         color_mode_switch.set(True)
                         theme.set_color_mode("dark")
@@ -2559,7 +2559,7 @@ def change_setting_page(page):
                         theme.set_color_mode("dark")
                         theme.apply_theme(window=root,theme=("normal", "acrylic", "aero", "transparent","optimised", "win7", "inverse", "native", "popup", "mica")[index])
 
-                        theme.set_color_mode("dark")                      
+                        theme.set_color_mode("dark")
                     case 7:
                         color_mode_switch.set(True)
                         theme.set_color_mode("dark")
@@ -2567,9 +2567,9 @@ def change_setting_page(page):
                         theme.set_color_mode("dark")
                         theme.apply_theme(window=root,theme=("normal", "acrylic", "aero", "transparent","optimised", "win7", "inverse", "native", "popup", "mica")[index])
 
-                        theme.set_color_mode("dark") 
-                        
-                                                
+                        theme.set_color_mode("dark")
+
+
                     case _:
                         color_mode_switch.set(True)
                         theme.set_color_mode("dark")
@@ -2577,11 +2577,11 @@ def change_setting_page(page):
                         theme.set_color_mode("dark")
                         theme.apply_theme(window=root,theme=("normal", "acrylic", "aero", "transparent","optimised", "win7", "inverse", "native", "popup", "mica")[index])
 
-                dark_theme_map=index                     
-                        
+                dark_theme_map=index
+
             dark_theme_choose=maliang.SegmentedButton(canvas_setting_pages, (20, 290), text=("normal", "acrylic", "aero", "transparent",
                   "optimised", "win7", "inverse", "native", "popup", "mica"), layout="horizontal",command=change_dark_theme)
-            dark_theme_choose.set(dark_theme_map)   
+            dark_theme_choose.set(dark_theme_map)
             maliang.Text(canvas_setting_pages, (10, 350), text="自定义字体 - 实验性功能", fontsize=20, anchor="nw")
             def change_font(index):
                 global changed_font,now_font
@@ -2599,7 +2599,7 @@ def change_setting_page(page):
                         maliang.dialogs.TkMessage(icon="warning", title="小树壁纸-警告", message="此功能为实验性功能，可能存在一些问题，请谨慎使用！")
                         def extract_content(text):
                             # 尝试匹配中括号内的内容
-                            pattern_brackets = r'\{(.*?)\}' 
+                            pattern_brackets = r'\{(.*?)\}'
                             match_brackets = re.search(pattern_brackets, text)
                             if match_brackets:
                                 return match_brackets.group(1)  # 返回匹配到的内容
@@ -2627,13 +2627,13 @@ def change_setting_page(page):
                 choose_font = maliang.SegmentedButton(canvas_setting_pages, (20, 380), text=["霞鹜文楷",f"自定义-[{maliang.configs.Font.family}]"], layout="horizontal",command=change_font,default=1)
             else:
                 choose_font = maliang.SegmentedButton(canvas_setting_pages, (20, 380), text=["霞鹜文楷","自定义-[未选择]"], layout="horizontal",command=change_font,default=0)
-            
 
 
-            
 
-        case 3:   
-        
+
+
+        case 3:
+
             canvas_setting_pages.delete("all")
             canvas_setting_pages.destroy()
             canvas_setting_pages = maliang.Canvas(canvas_setting, auto_zoom=True, keep_ratio="min", free_anchor=True)
@@ -2650,7 +2650,7 @@ def change_setting_page(page):
                 if new_path:
                     logging.info(f"用户选择的新下载位置: {new_path}")
                     cog.set_value("data.download_path", new_path.replace("/","\\"))
-                    
+
                     # save_cog()
                     path_show.set(f"当前壁纸下载位置：{cog.get_value("data.download_path")}")
             def change_download_path_default():
@@ -2681,23 +2681,23 @@ def change_setting_page(page):
             #     else:
             #         root.attributes("-fullscreen", False)
             #         logging.info("切换到窗口模式")
-            
+
             # window_mode_choose=maliang.SegmentedButton(canvas_setting_pages, (20, 140), text=["全屏", "窗口"], layout="horizontal",command=change_window_mode,default=1)
             # window_mode_choose.set(window_mode)
 
-                
-            
+
+
             t = maliang.Text(canvas_setting_pages, (10, 145), text="窗口透明度 (%d%%)" % (root.alpha()*100), fontsize=20, anchor="nw")
             def update_window_alpha(p):
                 nonlocal alpha_slider
-                t.texts[0].set("窗口透明度 (%d%%)" % (p * 100))  
-                root.alpha(p)  
+                t.texts[0].set("窗口透明度 (%d%%)" % (p * 100))
+                root.alpha(p)
                 if p <= 0.1:
                     root.alpha(0)
                     alpha_slider.destroy()
                     ach = maliang.Toplevel(root,[700,300],title="成就")
                     ach.iconbitmap(r"./assets/icons/ach.ico")
-                    ach.center()  
+                    ach.center()
                     def on_closing():
                         maliang.dialogs.TkMessage(master=ach,icon="warning", title="小树壁纸-警告", message="先做出选择再离开吧！",detail="否则主窗口将无法恢复！")
                     ach.protocol("WM_DELETE_WINDOW", on_closing)
@@ -2712,20 +2712,20 @@ def change_setting_page(page):
                         alpha_slider=maliang.Slider(canvas_setting_pages, (10, 180), (350, 30), command=update_window_alpha, default=root.alpha())
                         alpha_slider.set(1)
                         root.alpha(1)
-                        t.texts[0].set("窗口透明度 (100%) 你已经被仁慈地拯救了 (*°▽°*)")  
+                        t.texts[0].set("窗口透明度 (100%) 你已经被仁慈地拯救了 (*°▽°*)")
                         ach.destroy()
-                        
-                        
+
+
                     maliang.Button(canvas_ach, (250, 250), text="救救窗口", command=help_window, size=(200,40))
-                    
 
 
-                
+
+
 
             alpha_slider=maliang.Slider(canvas_setting_pages, (10, 180), (350, 30), command=update_window_alpha, default=root.alpha())
             maliang.Text(canvas_setting_pages, (10, 220), text="置顶", fontsize=20, anchor="nw")
             maliang.Switch(canvas_setting_pages, (10, 250), command=lambda s: (root.attributes("-topmost", s), logging.info(f"置顶状态: {s}")), default=root.attributes("-topmost"))
-            maliang.Text(canvas_setting_pages, (100, 220), text="隐藏标题栏", fontsize=20, anchor="nw")  
+            maliang.Text(canvas_setting_pages, (100, 220), text="隐藏标题栏", fontsize=20, anchor="nw")
             maliang.Switch(canvas_setting_pages, (100, 250), command=lambda s: (root.overrideredirect(s), logging.info(f"隐藏标题栏状态: {s}")), default=root.overrideredirect())
         case 2:
             canvas_setting_pages.delete("all")
@@ -2744,14 +2744,14 @@ def change_setting_page(page):
                 new_bg = filedialog.askopenfilename(initialdir=cog.get_value("display.window_background_image_path"),title="选择壁纸",parent=root,filetypes=[("图片文件","*.jpg;*.png;*.jpeg")])
                 if new_bg:
                     logging.info(f"用户选择的壁纸: {new_bg}")
-                    
+
                     cog.set_value("display.window_background_image_path",new_bg)
-                    
+
                     current_bg.set(f"{cog.get_value("display.window_background_image_path")}")
-                    
+
                     # canvas_setting.create_image(0, 0, image=maliang.PhotoImage(file=cog['window_wallpaper_path']), anchor="nw")
             def change_bg_default():
-                cog.set_value("display.window_background_image_path" , "") 
+                cog.set_value("display.window_background_image_path" , "")
 
                 current_bg.set("无")
             maliang.Button(canvas_setting_pages, (0, 110), text="更改背景", command=change_bg, size=(1000,50))
@@ -2780,7 +2780,7 @@ def change_setting_page(page):
                 df.set(0)
             elif cog.get_value("home_page.style") == "next":
                 df.set(1)
-            
+
 
         case 4:
 
@@ -2839,18 +2839,18 @@ def change_setting_page(page):
                             maliang.Text(canvas_setting_pages, (50, 150), text="当前已是最新版本")
                         else:
                             logging.error(f"未知的更新状态：{result}")
-                        
-                        
+
+
 
                     checker = UpdateChecker()
                     checker.async_check(callback=handle_update_result)
 
                 except Exception as e:
                     logging.error(f"更新检查失败：{e}")
-                    
+
                     maliang.dialogs.TkMessage(icon="error",title="更新",message="更新检查失败",detail="未知错误\n详细错误信息请查看日志")
 
-                
+
         case 5:
             canvas_setting_pages.delete("all")
             canvas_setting_pages.destroy()
@@ -2870,7 +2870,7 @@ def change_setting_page(page):
             os._exit(0)
 maliang.SegmentedButton(canvas_setting, [80, 200], text=["主题", "窗口", "主页", "数据", "更新", "脚本", "关于", "退出"], layout="vertical",command=change_setting_page)
 # # 设置目标宽度或高度
-# base_width1 = 150 
+# base_width1 = 150
 # # 计算比例并调整图片大小
 # img1 = Image.open(r"./assets/images/未完成.jpg")
 # w_percent1 = base_width1 / float(img1.size[0])
@@ -2936,7 +2936,7 @@ def del_temp_folder():
 
     else:
         logging.info("清理缓存文件夹操作已取消")
-    
+
     data_size.set(f"缓存文件：{get_folder_size("temp"):.2f}MB | 已保存的日志数量：{get_file_count('logs')}")
 
 def del_log_folder():
@@ -3068,7 +3068,7 @@ def wallpaper_detail(*args):
         copy_image_to_clipboard(wallpaper_path)
         notification.notify(
             title='壁纸复制成功',
-            message='壁纸文件已复制到剪贴板啦~',  
+            message='壁纸文件已复制到剪贴板啦~',
             app_icon=cog.get_value("display.window_icon_path"),
             timeout=3,
         )
@@ -3085,7 +3085,7 @@ def wallpaper_detail(*args):
         shutil.copyfile(wallpaper_path, f"./assets/images/background.{os.path.basename(wallpaper_path).split('.')[-1]}")
         cog.set_value("display.window_background_image_path" , f"./assets/images/background.{os.path.basename(wallpaper_path).split('.')[-1]}")
         # save_cog()
-        # notify=maliang.Toplevel(root,size=(300,100),title="提示",position=(10,10))   
+        # notify=maliang.Toplevel(root,size=(300,100),title="提示",position=(10,10))
         notification.notify(
             title='壁纸设置成功',
             message='壁纸文件已设置为主页背景！',
@@ -3106,7 +3106,7 @@ def wallpaper_detail(*args):
     # maliang.Text(canvas_wallpaper_detail, (100, 200), text="Unsplash", fontsize=30,anchor="nw")
     # maliang.Text(canvas_wallpaper_detail, (100, 250), text="Wallhaven", fontsize=30,anchor="nw")
     maliang.Image(canvas_wallpaper_detail,[80,120],image=resize_image(wallpaper_path,300),anchor="nw")
-    
+
     # maliang.Button(canvas_wallpaper_detail, (100, 600), text="设为壁纸", command=lambda: copy_and_set_wallpaper(wallpaper_path))
 
     set_w_bing_icon = maliang.Canvas(canvas_wallpaper_detail, auto_zoom=True, keep_ratio="min", free_anchor=True)
@@ -3128,15 +3128,15 @@ def wallpaper_detail(*args):
     copy_w_bing_icon.place(x=990, y=670,width=40,height=50,anchor="center")
     maliang.Text(copy_w_bing_icon, (0, 10), text="", fontsize=40, family="Segoe Fluent lcons",anchor="nw")
     copy_w_bing_icon.bind("<Button-1>", lambda event: copy_wallpaper())
-    maliang.Text(canvas_wallpaper_detail,(990, 705),text="复制",fontsize=15,anchor="center") 
+    maliang.Text(canvas_wallpaper_detail,(990, 705),text="复制",fontsize=15,anchor="center")
     set_background_icon = maliang.Canvas(canvas_wallpaper_detail, auto_zoom=True, keep_ratio="min", free_anchor=True)
     set_background_icon.place(x=910, y=670,width=40,height=50,anchor="center")
     maliang.Text(set_background_icon, (0, 10), text="", fontsize=40, family="Segoe Fluent lcons",anchor="nw")
-    set_background_icon.bind("<Button-1>", lambda event: set_background())   
-    maliang.Text(canvas_wallpaper_detail,(910, 705),text="设为主页背景",fontsize=15,anchor="center")   
+    set_background_icon.bind("<Button-1>", lambda event: set_background())
+    maliang.Text(canvas_wallpaper_detail,(910, 705),text="设为主页背景",fontsize=15,anchor="center")
     canvas_wallpaper_detail.create_text(80, 450,text="",font=("Segoe Fluent lcons",25),anchor="nw",fill="red")
     maliang.Text(canvas_wallpaper_detail,(110, 440),text="版权警告：图片仅供作为壁纸使用，禁止用于其他用途\n小树壁纸不提供任何图片在线存储服务，图片源自网络，如出现任何违法违规行为请及时联系我们",fontsize=23,anchor="nw")
-    
+
     # maliang.Text(canvas_wallpaper_detail, (100, 650), text="壁纸来源：", fontsize=30,anchor="nw")
 
 #### 壁纸面板-Unsplash源
@@ -3230,18 +3230,18 @@ def download_wallpaper(type_name):
                         if total_size:
                             progress = downloaded_size / total_size * 100
                             pb1.set(progress)  # 更新进度条
-                        
+
                         root.update_idletasks()  # 刷新界面
 
             logging.info("下载完成！")
             wallpaper_path=change_file_extension(filename,determine_image_format(filename))
-            
+
             canvas_download.place_forget()
             wallpaper_detail()
 
         except Exception as e:
             logging.error(f"下载失败: {e}")
-            
+
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             canvas_download.place_forget()
             wallpaper()  # 返回壁纸页面
@@ -3278,7 +3278,7 @@ def wallpaper_wallhaven():
     def ch_return(ch1):
         (random_wallhaven, today_wallhaven)[ch1]()
     maliang.SegmentedButton(canvas_wallpaper_more_wallhaven, (100, 25),text= ["随机","每日"], command=ch_return, default=0)
-    maliang.Button(canvas_wallpaper_more_wallhaven, (450, 30), text="获取数据", command=lambda: download_wallpaper("wallhaven"))  
+    maliang.Button(canvas_wallpaper_more_wallhaven, (450, 30), text="获取数据", command=lambda: download_wallpaper("wallhaven"))
 
 #### 壁纸面板-风景源
 def wallpaper_风景():
@@ -3302,7 +3302,7 @@ def wallpaper_风景():
             # case 2:
             #     api_url="https://api.dujin.org/pic/fengjing"
     maliang.SegmentedButton(canvas_wallpaper_more_fengjing, (100, 25),text= ["远梦接口","远方接口"], command=风景_ch, default=0)
-    maliang.Button(canvas_wallpaper_more_fengjing, (450, 30), text="获取数据", command=lambda: download_wallpaper("landscape"))    
+    maliang.Button(canvas_wallpaper_more_fengjing, (450, 30), text="获取数据", command=lambda: download_wallpaper("landscape"))
 
 #### 壁纸面板-二次元源
 def wallpaper_二次元():
@@ -3370,7 +3370,7 @@ def wallpaper_二次元():
                 case 1:
                     api_url="https://img.paulzzh.com/touhou/random"
                 case 2:
-                    api_url="https://www.dmoe.cc/random.php" 
+                    api_url="https://www.dmoe.cc/random.php"
                 case 3:
                     api_url="https://image.anosu.top/pixiv/direct"
                 case 4:
@@ -3392,7 +3392,7 @@ def wallpaper_二次元():
     # maliang.SegmentedButton(canvas_wallpaper_more, (100, 25),layout="vertical",text=["[保罗]sm.ms-动漫", "[保罗]github.io-动漫", "[次元]原神","[次元]随机","[次元]AI生成","[次元]风景","[次元]小狐狸","[次元]萌图","[樱花]随机","[PAULZZH]东方"], commands=(), default=0)
     is_choose=None
     paul_wallpaper()
-    maliang.Button(canvas_wallpaper_more_erciyuan, (600, 30), text="获取数据", command=lambda: download_wallpaper("anime")) 
+    maliang.Button(canvas_wallpaper_more_erciyuan, (600, 30), text="获取数据", command=lambda: download_wallpaper("anime"))
 
 def wallpaper_360():
     global api_url,tid
@@ -3401,7 +3401,7 @@ def wallpaper_360():
     canvas_wallpaper_more_fengjing.place_forget()
     canvas_wallpaper_more_erciyuan.place_forget()
     canvas_wallpaper_more_360.place(x=640, y=205,width=1280,height=395,anchor="n")
-    tid=67 
+    tid=67
     # print(123456)
     # 精选 tid=67
     # 风景 tid=1
@@ -3478,7 +3478,7 @@ def wallpaper_360():
             maliang.Button(canvas_wallpaper_more_360_download, (1150, 620), text="返回", command=back_to_360)
             # ch_360.set(0)
             return
-        
+
         # if int(pages.get()) < 1:
         #     canvas_wallpaper_more_360_download.delete("all")
         #     maliang.Text(canvas_wallpaper_more_360_download, (100, 100), text="错误", fontsize=50, anchor="nw")
@@ -3488,7 +3488,7 @@ def wallpaper_360():
         #     # ch_360.set(0)
         #     return
         # global api_url
-        
+
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
         }
@@ -3514,7 +3514,7 @@ def wallpaper_360():
                 maliang.Text(canvas_wallpaper_more_360_download, (100, 180), text=f"请求页码:{pages.get()} | 最大页码:{json_data['data']['total_page']}", fontsize=25, anchor="nw")
                 maliang.Text(canvas_wallpaper_more_360_download, (100, 220), text=f"本页共{len(json_data['data']['list'])}张图片", fontsize=25, anchor="nw")
                 maliang.Text(canvas_wallpaper_more_360_download, (100, 260), text="正在下载图片...", fontsize=25, anchor="nw")
-                
+
                 headers = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
                 }
@@ -3528,7 +3528,7 @@ def wallpaper_360():
                     nonlocal completed_files
                     # 增加已完成文件数量
                     completed_files += 1
-                    
+
                     # 计算总进度
                     progress = completed_files / total_files
                     logging.info(f"已完成 {completed_files} / {total_files}，进度 {progress:.2%}")
@@ -3537,7 +3537,7 @@ def wallpaper_360():
                     pb1.set(progress)
                     def change_img(img_index):
                         nonlocal now_show_img
-            
+
                         img_show_360.set(resize_image(wallpaper_360_path_list[img_index],270))
                         now_show_img=wallpaper_360_path_list[img_index]
                     if progress >= 1:
@@ -3574,7 +3574,7 @@ def wallpaper_360():
                             copy_image_to_clipboard(now_show_img)
                             notification.notify(
                                 title='壁纸复制成功',
-                                message='壁纸文件已复制到剪贴板啦~',  
+                                message='壁纸文件已复制到剪贴板啦~',
                                 app_icon=cog.get_value("display.window_icon_path"),
                                 timeout=3,
                             )
@@ -3589,7 +3589,7 @@ def wallpaper_360():
                             )
                         def go_back_wallpaper():
                             logging.info("从360壁纸返回壁纸选择页面")
-                            
+
                             if cog.get_value("data.clear_cache_when_360_back"):
                                 logging.info("需要强制清理缓存")
                                 clean_folder("./temp", [os.path.basename(home_page_assets_path)]+occupied_file_list)
@@ -3608,7 +3608,7 @@ def wallpaper_360():
                         back_wallpaper_detail.place(x=50, y=670,width=40,height=40,anchor="center")
                         maliang.Text(back_wallpaper_detail, (0, 0), text="", fontsize=40, family="Segoe Fluent lcons",anchor="nw")
                         back_wallpaper_detail.bind("<Button-1>", lambda event: go_back_wallpaper())
-                        
+
                         set_w_bing_icon = maliang.Canvas(canvas_wallpaper_more_360_download, auto_zoom=True, keep_ratio="min", free_anchor=True)
                         set_w_bing_icon.place(x=1230, y=670,width=40,height=50,anchor="center")
                         maliang.Text(set_w_bing_icon, (0, 10), text="", fontsize=40, family="Segoe Fluent lcons",anchor="nw")
@@ -3628,11 +3628,11 @@ def wallpaper_360():
                         copy_w_bing_icon.place(x=990, y=670,width=40,height=50,anchor="center")
                         maliang.Text(copy_w_bing_icon, (0, 10), text="", fontsize=40, family="Segoe Fluent lcons",anchor="nw")
                         copy_w_bing_icon.bind("<Button-1>", lambda event: copy_wallpaper())
-                        maliang.Text(canvas_wallpaper_more_360_download,(990, 705),text="复制",fontsize=15,anchor="center")   
+                        maliang.Text(canvas_wallpaper_more_360_download,(990, 705),text="复制",fontsize=15,anchor="center")
 
                         canvas_wallpaper_more_360_download.create_text(80, 575,text="",font=("Segoe Fluent lcons",25),anchor="nw",fill="red")
                         maliang.Text(canvas_wallpaper_more_360_download,(110, 570),text="版权警告：图片仅供作为壁纸使用，禁止用于其他用途",fontsize=23,anchor="nw")
-                        
+
                 def long_running_task1():
                     global wallpaper_360_path_list
                     try:
@@ -3682,7 +3682,7 @@ def wallpaper_360():
                                     if chunk:
                                         f.write(chunk)
                                         downloaded_size += len(chunk)
-                                        
+
                                         root.update_idletasks()
 
                             logging.info("下载完成！")
@@ -3693,14 +3693,14 @@ def wallpaper_360():
 
                     except Exception as e:
                         logging.error(f"下载失败: {e}")
-                        
+
                         maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
                         # canvas_download.place_forget()
                         canvas_wallpaper_more_360_download.place_forget()
                         canvas_wallpaper_more_360_download.delete("all")
                         wallpaper()  # 返回壁纸页面
 
-                
+
                 root.after(1000, long_running_task1)
 
 
@@ -3726,10 +3726,10 @@ def wallpaper_360():
     # else:
     #     logging.error(f"请求失败，状态码: {response.status_code}")
     #     maliang.dialogs.TkMessage(f"请求失败，状态码: {response.status_code}", title="错误", icon="error")
-    
+
 def wallpaper_choose(ch):
     (wallpaper_wallhaven,wallpaper_风景,wallpaper_二次元,wallpaper_360)[ch]()
-    
+
 
 wallpaper_choose_button=maliang.SegmentedButton(canvas_wallpaper, (100, 150),text= ["Wallhaven精选", "风景", "二次元", "360壁纸"], command=wallpaper_choose, default=0)
 
@@ -3754,7 +3754,7 @@ def dd(*args):
             # global bing_data_name
             url=detail_image_url
             # print(get_bing_image())
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自定义用户代理
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
@@ -3762,16 +3762,16 @@ def dd(*args):
 
             # 发送HEAD请求以获取文件大小
             response = requests.head(url, headers=headers)
-            root.update_idletasks() 
+            root.update_idletasks()
             file_size = int(response.headers.get('Content-Length', 0))
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自动识别文件名和扩展名
             # filename = url.split('/')[-1] or 'downloaded_file'
             filename = f"{time.strftime('Bing_%Y-%m-%d.jpg', time.localtime())}"
-            root.update_idletasks() 
+            root.update_idletasks()
             if not filename:
                 filename = 'downloaded_file'
-            root.update_idletasks() 
+            root.update_idletasks()
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
@@ -3798,7 +3798,7 @@ def dd(*args):
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
-            
+
             logging.info("下载完成！")
             os.system(f"explorer.exe /select,\"{cog.get_value("data.download_path")}\\{filename}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
@@ -3812,7 +3812,7 @@ def dd(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-            
+
             more_bing()
 
         # 任务完成后更新窗口
@@ -3824,20 +3824,20 @@ def dd(*args):
         # 利用after方法调用长时间运行的任务
         root.after(100, long_running_task1)
     canvas_detail.place_forget()
-    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")    
+    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")
     maliang.Text(canvas_download, (100, 100), text="正在下载...", fontsize=50, anchor="nw")
     pb1 = maliang.ProgressBar(canvas_download, (420, 260), (380, 8))
     animation.Animation(2000, pb1.set, controller=animation.smooth,
                 fps=60, repeat=-1).start(delay=1500)
     start_task1()
 
-def ll(*args):  
+def ll(*args):
     def long_running_task1():
         try:
             # global bing_data_name
             url=detail_image_url
             # print(get_bing_image())
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自定义用户代理
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
@@ -3845,18 +3845,18 @@ def ll(*args):
 
             # 发送HEAD请求以获取文件大小
             response = requests.head(url, headers=headers)
-            root.update_idletasks() 
+            root.update_idletasks()
             file_size = int(response.headers.get('Content-Length', 0))
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自动识别文件名和扩展名
             # filename = url.split('/')[-1] or 'downloaded_file'
             filename = filedialog.asksaveasfilename(title='Bing-另存为', filetypes=[('JPEG文件', '.jpg')], defaultextension=".jpg")
-            root.update_idletasks() 
+            root.update_idletasks()
             if not filename:
-                
+
                 while(filename is not True):
                     filename = filedialog.asksaveasfilename(title='Bing-另存为', filetypes=[('JPEG文件', '.jpg')], defaultextension=".jpg")
-            root.update_idletasks() 
+            root.update_idletasks()
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
@@ -3883,7 +3883,7 @@ def ll(*args):
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
-            
+
             logging.info("下载完成！")
             os.system(f"explorer.exe /select,\"{filename.replace("/","\\")}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
@@ -3897,7 +3897,7 @@ def ll(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-            
+
             more_bing()
 
         # 任务完成后更新窗口
@@ -3909,7 +3909,7 @@ def ll(*args):
         # 利用after方法调用长时间运行的任务
         root.after(100, long_running_task1)
     canvas_detail.place_forget()
-    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")    
+    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")
     maliang.Text(canvas_download, (100, 100), text="正在下载...", fontsize=50, anchor="nw")
     pb1 = maliang.ProgressBar(canvas_download, (420, 260), (380, 8))
     animation.Animation(2000, pb1.set, controller=animation.smooth,
@@ -3921,7 +3921,7 @@ def set_w_bing(*args):
             # global bing_data_name
             url=detail_image_url
             # print(get_bing_image())
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自定义用户代理
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
@@ -3929,16 +3929,16 @@ def set_w_bing(*args):
 
             # 发送HEAD请求以获取文件大小
             response = requests.head(url, headers=headers)
-            root.update_idletasks() 
+            root.update_idletasks()
             file_size = int(response.headers.get('Content-Length', 0))
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自动识别文件名和扩展名
             # filename = url.split('/')[-1] or 'downloaded_file'
             # filename = f"{time.strftime('Bing_%Y-%m-%d.jpg', time.localtime())}"
-            root.update_idletasks() 
+            root.update_idletasks()
             # if not filename:
                 # filename = 'downloaded_file'
-            root.update_idletasks() 
+            root.update_idletasks()
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
@@ -3965,7 +3965,7 @@ def set_w_bing(*args):
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
-            
+
             logging.info("下载完成！")
             # os.system(f"explorer.exe /select,\"{cog.get_value("data.download_path")}\\{filename}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
@@ -3980,7 +3980,7 @@ def set_w_bing(*args):
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             logging.error(f"下载失败{e}")
-            
+
             more_bing()
 
         # 任务完成后更新窗口
@@ -3992,7 +3992,7 @@ def set_w_bing(*args):
         # 利用after方法调用长时间运行的任务
         root.after(100, long_running_task1)
     canvas_detail.place_forget()
-    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")    
+    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")
     maliang.Text(canvas_download, (100, 100), text="正在下载...", fontsize=50, anchor="nw")
     pb1 = maliang.ProgressBar(canvas_download, (420, 260), (380, 8))
     animation.Animation(2000, pb1.set, controller=animation.smooth,
@@ -4004,7 +4004,7 @@ def copy_w_bing(*args):
             # global bing_data_name
             url=detail_image_url
             # print(get_bing_image())
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自定义用户代理
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0'
@@ -4012,14 +4012,14 @@ def copy_w_bing(*args):
 
             # 发送HEAD请求以获取文件大小
             response = requests.head(url, headers=headers)
-            root.update_idletasks() 
+            root.update_idletasks()
             file_size = int(response.headers.get('Content-Length', 0))
-            root.update_idletasks() 
+            root.update_idletasks()
             # 自动识别文件名和扩展名
             # filename = url.split('/')[-1] or 'downloaded_file'
-            root.update_idletasks() 
+            root.update_idletasks()
 
-            root.update_idletasks() 
+            root.update_idletasks()
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
@@ -4046,7 +4046,7 @@ def copy_w_bing(*args):
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
-            
+
             logging.info("下载完成！")
             # os.system(f"explorer.exe /select,\"{cog.get_value("data.download_path")}\\{filename}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
@@ -4072,7 +4072,7 @@ def copy_w_bing(*args):
         # 利用after方法调用长时间运行的任务
         root.after(100, long_running_task1)
     canvas_detail.place_forget()
-    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")   
+    canvas_download.place(width=1280, height=720, x=640, y=360, anchor="center")
     maliang.Text(canvas_download, (100, 100), text="正在获取图片数据...", fontsize=50, anchor="nw")
     pb1 = maliang.ProgressBar(canvas_download, (420, 260), (380, 8))
     # maliang.animation.Animation(2000, maliang.animation.smooth, callback=pb1.set,
@@ -4149,7 +4149,7 @@ def update_window() -> None:
     maliang.Text(update_main_canvas, (15, 170), text=f"更新内容：\n{update_check_result['update_note']}", fontsize=25,family="MiSans")
 
     update_main_window.mainloop()
-    
+
 
 class UpdateChecker:
     """
@@ -4184,11 +4184,11 @@ class UpdateChecker:
                 result = self.result_queue.get(timeout=self.timeout)
             except queue.Empty:
                 logging.error("更新检查超时")
-                
+
                 result["error_message"] = "请求超时"
             except Exception as e:
                 logging.error(f"更新检查异常: {str(e)}")
-                
+
                 result["error_message"] = str(e)
             finally:
                 if callback:
@@ -4203,7 +4203,7 @@ class UpdateChecker:
             kwargs={**kwargs, 'max_retries': 3},
             daemon=True
         ).start()
-        
+
         threading.Thread(target=result_wrapper, daemon=True).start()
 
     def parallel_checks(self, tasks, max_retries=3):
@@ -4239,7 +4239,7 @@ class UpdateChecker:
                     raise Exception(f"所有{max_retries}次重试均失败") from e
 
 
-def load_home_page_data(): 
+def load_home_page_data():
     global home_page_assets_data,loading_ring,home_page_assets_path,detail_image_url
 
     loading_ring.destroy()
@@ -4256,7 +4256,7 @@ def load_home_page_data():
         }
     else:
         spotlight_data = random.choice(get_spotlight_image())
-        home_page_assets_data = { 
+        home_page_assets_data = {
             "source": "Spotlight",
             "url": spotlight_data['url'],
             "title": spotlight_data['title'],
@@ -4302,7 +4302,7 @@ def load_home_page_data():
 
                     if total_size > 0:
                         # 计算下载进度百分比
-                        progress = (downloaded_size / total_size) 
+                        progress = (downloaded_size / total_size)
                         # 更新进度条
                         if progress <= 1.0:
 
@@ -4336,7 +4336,7 @@ def load_home_page_data():
     except Exception as e:
         error_msg = f"下载图片时出错: {str(e)}"
         logging.error(error_msg)
-        
+
         # 如果下载失败，删除临时文件
         if os.path.exists(temp_filename):
             os.remove(temp_filename)
@@ -4377,7 +4377,7 @@ maliang.Image(canvas_loading, (350, 300), image=resize_image(cog.get_value("disp
 maliang.Text(canvas_loading , (500, 300),fontsize=80,text="小树壁纸")
 loading_ring = maliang.Spinner(canvas_loading, (50 , 50), (60 , 60), mode="indeterminate", widths=(12,12))
 loading_notice = maliang.Text(canvas_loading, (150 , 55),text="",fontsize=35)
-if cog.get_value("update.enabled"):    
+if cog.get_value("update.enabled"):
     loading_notice.set("正在检查更新...")
     try:
         def handle_update_result(result):
@@ -4396,14 +4396,14 @@ if cog.get_value("update.enabled"):
                 maliang.TkMessage(icon="error",title="更新",message="更新检查失败",detail="详细错误信息请查看日志")
             logging.info("开始加载资源")
             threading.Thread(target=load_home_page_data, daemon=True).start()
-            
+
 
         checker = UpdateChecker()
         checker.async_check(callback=handle_update_result)
 
     except Exception as e:
         logging.error(f"更新检查失败：{e}")
-        
+
         maliang.dialogs.TkMessage(icon="error",title="更新",message="更新检查失败",detail="未知错误\n详细错误信息请查看日志")
 
 else:
