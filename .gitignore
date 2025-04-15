@@ -1,3 +1,4 @@
+*.spec
 start.cmd
 start.sh
 __pycache__
@@ -14,4 +15,5 @@ src/logs/
 src/tests/
 src/tools/
 src/Little_Tree_Wallpaper.egg-info/
+
 

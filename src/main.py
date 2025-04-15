@@ -1181,7 +1181,6 @@ def command_line_debug_tool():
                 #     style.set_color_mode("light")
                 case "list":
                     print("可选主题：")
-                    # print("light dark acrylic 原木秋色 粉雕玉琢 粉花春色 中秋月下 欢庆春节 清明祭扫")
                     print("light dark acrylic")
                 case _:
                     print(f"{Style.RESET_ALL}{Fore.RED}不存在的主题：{theme_name}{Style.RESET_ALL}")
@@ -1272,6 +1271,7 @@ def clean_page():
 def test_info():
     canvas_loading.place_forget()
     canvas_test.place(width=1280, height=720, x=640, y=360, anchor="center")
+    
 def egg():
     # maliang.dialogs.TkMessage(icon="info",title="彩蛋",message="你发现了一个彩蛋！",detail="你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！")
     canvas_index.delete("all")
@@ -1312,11 +1312,6 @@ def about():
 def more_bing(*args):
     global canvas_detail
     canvas_detail.place(width=1280, height=720, x=0, y=0)
-    
-    
-    
-
-    
     canvas_download.delete("all")
     canvas_download.place_forget()
     canvas_index.delete("all")
