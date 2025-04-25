@@ -1,54 +1,64 @@
 ---
-name: "问题反馈或功能请求"
-about: 提交清晰的问题描述或功能建议以帮助开发者快速响应
-title: "[类型] 简短的问题摘要"
+name: "Issue Report or Feature Request"
+about: Submit clear problem descriptions or feature suggestions to help developers respond promptly
+title: "[Type] Brief Issue Summary"
 labels: ''
 assignees: ''
 
 ---
 
-<!-- 请先确认 -->
-- [ ] 我已经搜索过现有issue列表且未找到重复问题
-- [ ] 我的问题未在FAQ或文档中得到解答
+<!-- Please confirm by putting x in [ ] to indicate you've checked the following: -->
+- [ ] I have searched existing issues and found no duplicates  
+- [ ] My issue is not addressed in the FAQ or documentation  
 
-**问题类型**
-<!-- 删除不相关的选项 -->
-- Bug报告
-- 功能请求
-- 文档问题
-- 性能问题
-- 安全问题
-- 其他（请说明）
+---
 
-**描述问题**
-<!-- 清晰准确描述遇到的问题 -->
+### **Issue Type**  
+<!-- Please choose the type of issue by putting x in [ ]: -->
+- [ ] Bug Report  
+- [ ] Feature Request  
+- [ ] Documentation Issue  
+- [ ] Performance Issue  
+- [ ] Security Concern  
+- [ ] Other (please specify):  
 
-**复现步骤**
-1. 操作步骤："点击..."
-2. 输入参数："当设置为..."
-3. 出现错误："观察到..."
+---
 
-**预期行为**
-<!-- 你期望的正常表现 -->
+### **Description**  
+<!-- Clearly and accurately describe the issue encountered -->  
 
-**实际行为**
-<!-- 实际发生的异常情况 -->
+---
 
-**环境信息**
-- 操作系统: [例如 Windows 11 23H2]
-- 浏览器/版本: [例如 Chrome 120.0.6099.71]
-- 项目版本: [例如 v2.3.1 或 commit hash]
-- 其他依赖版本: [例如 Node.js 18.12.1]
+### **Steps to Reproduce**  
+1. **Action steps**: "Click..."  
+2. **Input parameters**: "When set to..."  
+3. **Observed error**: "Seeing..."  
 
-**附加材料**
-<!-- 可包含以下内容 -->
-- 错误日志截图/文本
-- 性能分析报告
-- 网络请求截图（开发者工具）
-- 相关配置代码段
+---
 
-**补充说明**
-<!-- 其他有助于定位问题的信息 -->
+### **Expected Behavior**  
+<!-- What you expected to happen -->  
 
-<!-- 项目特定要求 -->
-_（此处可添加项目专属指南，例如：请先签署贡献者协议/cla-assistant说明等）_
+---
+
+### **Actual Behavior**  
+<!-- What actually occurred -->  
+
+---
+
+### **Environment**  
+- **OS**: *[e.g., Windows 11 23H2]*  
+- **Project Version**: *[e.g., v6.0.0 or commit hash]*  
+- **Dependency Versions**: *[e.g., Python 3.13.2]* (Applies only to feedback from running the project via source code)  
+
+---
+
+### **Attachments**  
+<!-- May include: -->  
+- Error log screenshots/text  
+- Performance profiling reports  
+- Relevant configuration code snippets
+
+---
+
+** I have read and agree to all terms of the Little Tree Wallpaper Contributor Agreement  **
