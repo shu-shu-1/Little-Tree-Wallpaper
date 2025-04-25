@@ -46,6 +46,7 @@ import re
 import webbrowser
 import shutil
 import platform
+import argparse
 
 # 非标准库
 import pystray
@@ -66,27 +67,6 @@ from PIL import Image, ImageFile
 from colorama import Fore, Style
 from functools import lru_cache
 from importlib.util import find_spec
-
-# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-# 模块: 启动检查和环境处理
-# 功能: 检查系统环境并给出提示/导入库
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-if platform.system() == "Windows" and find_spec("win32clipboard") is None and find_spec("win32gui") is None and find_spec("win32api") is None and find_spec("win32con") is None:
-    print(Fore.RED + "[启动检查不通过]缺少pywin32库，请安装后重试！" + Style.RESET_ALL)
-    maliang.dialogs.TkMessage("您当前使用的是Windows平台，但是您未安装pywin32库，请安装后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
-if platform.system() == "Windows":
-    print(platform.win32_ver()[0])
-    if not (platform.win32_ver()[0] == "10" or platform.win32_ver()[0] == "11"):
-        print(Fore.RED + "[启动检查不通过]小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！" + Style.RESET_ALL)
-        maliang.dialogs.TkMessage("小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
-        sys.exit(1)
-if platform.system() == "Windows":
-    import win32gui
-    import win32con
-    import win32api
-    import win32clipboard
-print(Fore.GREEN + f"[启动检查通过]当前系统环境为{platform.system()} {platform.release()} {platform.version()}" + Style.RESET_ALL)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 库设置
@@ -201,7 +181,44 @@ API_Source: dict = {
     }
 } #? 壁纸源API
 
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 模块: 输入参数处理
+# 功能: 输入参数处理，获取命令行参数、环境变量、默认值等
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+
+parser = argparse.ArgumentParser(description='Xiaoshu Wallpaper')
+parser.add_argument('-v', '--version', action='version', version=f'Xiaoshu Wallpaper {VER}')
+parser.add_argument('-s', '--startup', action='store_true', help='Start using the startup mode.')
+
+
+console_args = parser.parse_args(sys.argv[1:])
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 模块: 启动检查和环境处理
+# 功能: 检查系统环境并给出提示/导入库
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+if platform.system() == "Windows" and find_spec("win32clipboard") is None and find_spec("win32gui") is None and find_spec("win32api") is None and find_spec("win32con") is None:
+    print(Fore.RED + "[启动检查不通过]缺少pywin32库，请安装后重试！" + Style.RESET_ALL)
+    maliang.dialogs.TkMessage("您当前使用的是Windows平台，但是您未安装pywin32库，请安装后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
+if platform.system() == "Windows":
+    print(platform.win32_ver()[0])
+    if not (platform.win32_ver()[0] == "10" or platform.win32_ver()[0] == "11"):
+        print(Fore.RED + "[启动检查不通过]小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！" + Style.RESET_ALL)
+        maliang.dialogs.TkMessage("小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
+        sys.exit(1)
+# 检测资源完整性
+if not os.path.exists("./assets/"):
+    print(Fore.RED + "[启动检查不通过]资源文件丢失，请重新下载程序！" + Style.RESET_ALL)
+    maliang.dialogs.TkMessage("资源文件丢失，请重新下载程序！",title="小树壁纸-启动检查",icon="error")
+    exit(1)
+if platform.system() == "Windows":
+    import win32gui
+    import win32con
+    import win32api
+    import win32clipboard
+print(Fore.GREEN + f"[启动检查通过]当前系统环境为{platform.system()} {platform.release()} {platform.version()}" + Style.RESET_ALL)
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 测试版处理
