@@ -61,4 +61,4 @@ assignees: ''
 
 ---
 
-** I have read and agree to all terms of the [Little Tree Wallpaper Contributor Agreement](./CONTRIBUTING.md)  **
+** I have read and agree to all terms of the [Little Tree Wallpaper Contributor Agreement](https://github.com/shu-shu-1/Little-Tree-Wallpaper/blob/main/CONTRIBUTING.md)  **
