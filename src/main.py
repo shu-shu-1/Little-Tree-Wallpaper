@@ -92,8 +92,8 @@ DEBUG_MODE = True #?是否开启调试模式
 DEBUG_MODE_NO_LOADING_IMAGE = False #?是否不加载图片
 
 VER = "v6.0.0-rc.2" #? 主版本号
-INSIDE_VER = "6.0.0.rc.2.t23" #? 内部版本号
-BUILD_VER = "PY.TK.CORE.20250405001" #? 构建版本号
+INSIDE_VER = "6.0.0.rc.2.t25" #? 内部版本号
+BUILD_VER = "PY.TK.CORE.20250430001" #? 构建版本号
 
 IS_PUBLIC = False #? 是否为公开版本
 IS_TEST_VERSION = True #? 是否为测试版本
