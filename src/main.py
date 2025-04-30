@@ -47,11 +47,15 @@ import webbrowser
 import shutil
 import platform
 import argparse
+import hashlib
 
 # 非标准库
+import magic.magic
+import pycurl
 import pystray
 import requests
 import concurrent
+import magic
 import ltwpAPI.image
 import ltwpAPI.wallpaper
 import ltwpAPI.config
@@ -67,6 +71,7 @@ from PIL import Image, ImageFile
 from colorama import Fore, Style
 from functools import lru_cache
 from importlib.util import find_spec
+from urllib.parse import urlparse, unquote
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 库设置
@@ -189,7 +194,7 @@ API_Source: dict = {
 
 parser = argparse.ArgumentParser(description='Xiaoshu Wallpaper')
 parser.add_argument('-v', '--version', action='version', version=f'Xiaoshu Wallpaper {VER}')
-parser.add_argument('-s', '--startup', action='store_true', help='Start using the startup mode.')
+parser.add_argument('-s', '--startup', action='store_true', help='Start using the startup mode. (test)')
 
 
 console_args = parser.parse_args(sys.argv[1:])
@@ -715,7 +720,21 @@ def get_my_pictures_path() -> str:
                 detail="请查看日志文件"
             )
             raise
-
+def validate_image_file(path):
+    try:
+        with Image.open(path) as img:
+            img.verify()  # 轻量验证
+            if img.format == "JPEG":
+                # 检查EXIF头部
+                with open(path, 'rb') as f:
+                    f.seek(0x1000)  # 跳转至EXIF区域
+                    exif_data = f.read(0x200)
+                    if exif_data.count(b'\x00') > 100:  # 简单检测异常填充
+                        raise ValueError("可疑的EXIF结构")
+        return True
+    except Exception as e:
+        logging.error(f"无效图片: {str(e)}")
+        return False
 def determine_image_format(image_path: str) -> str:
     """
     获取图片文件的格式。
@@ -723,6 +742,12 @@ def determine_image_format(image_path: str) -> str:
     :param image_path: 图片文件的路径
     :return: 图片文件的格式（如 'PNG'）
     """
+    try:
+        validate_image_file(image_path)
+    except Exception as e:
+        logging.error(f"无效图片: {str(e)}")
+        return None
+
     try:
         with Image.open(image_path) as img:
             format = img.format
@@ -841,7 +866,7 @@ def get_spotlight_image() -> list:
     try:
         headers = {
             'Content-Type': 'application/json; charset=utf-8',
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36',  # 不是必须
+            'user-agent': UA
         }
         response = requests.get(
             "https://fd.api.iris.microsoft.com/v4/api/selection?&placement=88000820&bcnt=4&country=zh&locale=zh-cn&fmt=json",
@@ -870,8 +895,8 @@ def get_spotlight_image() -> list:
                 'copyrightlink': cta_url,
             })
         return image_links  # 返回一个数据数组
-    except Exception:
-        return False
+    except Exception as e:
+        raise Exception(f'Windows Spotlight API获取失败: {e}')
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 文件夹
@@ -1485,88 +1510,220 @@ def fetch_latest_release(
 
 
 
-def download_file(url, folder='./temp', manual_filename=None):
-    """下载文件
-    Args:
-        url: 文件URL
-        folder: 下载目录
-        manual_filename: 手动指定的文件名（可选）
-    Returns:
-        下载后的文件路径（如果下载成功）
+def download_file(url, save_path="./temp", custom_filename=None, timeout=30, max_retries=3, headers=None):
     """
-    print(url + " " + folder + " " + manual_filename)
-    try:
-        # 确保下载目录存在
-        if not os.path.exists(folder):
-            os.makedirs(folder)
-    except Exception as e:
-        logging.error(f"创建下载目录失败: {e}")
+    使用pycurl高效下载文件并根据多种情况自动判断文件格式和文件名
+    本函数已在V6.0.0 RC2重构
+    
+    参数:
+        url (str): 要下载的文件URL
+        save_path (str, optional): 保存文件的路径，如果没有指定则保存在temp目录
+        custom_filename (str, optional): 手动指定的文件名，如果包含扩展名则使用该扩展名
+        timeout (int, optional): 请求超时时间(秒)
+        chunk_size (int, optional): 每次读取的数据块大小
+        max_retries (int, optional): 最大重试次数
+        headers (dict, optional): 自定义请求头信息
+        
+    返回:
+        str: 保存的文件的完整路径，如果下载失败则返回None
+    """
+    
+    # 设置默认请求头
+    default_headers = {
+        'User-Agent': UA,
+        'Accept': '*/*',
+        'Connection': 'keep-alive'
+    }
+    if headers:
+        default_headers.update(headers)
 
-        return None
-
-    # 创建一个会话
-    session = requests.Session()
-    # 设置自定义User-Agent
-    session.headers.update({'User-Agent': UA})
-
-    try:
-        # 发送HTTP请求获取响应
-        response = session.get(url, stream=True)
-        response.raise_for_status()  # 如果响应状态码不是200，抛出异常
-
-        # 获取文件魔数（MIME类型）
-        content_type = response.headers.get('content-type')
-        if content_type:
-            # 尝试从content-type中提取MIME类型
-            mime_type = content_type.split(';')[0].strip()
-        else:
-            mime_type = None
-
-        # 从响应头中提取文件名
-        if manual_filename:
-            # 检查手动指定的文件名是否包含扩展名
-            if '.' not in manual_filename:
-                # 如果手动指定的文件名不包含扩展名，则尝试从MIME类型中获取扩展名
-                guessed_extension = mimetypes.guess_extension(mime_type)
-                if guessed_extension:
-                    filename = manual_filename + guessed_extension
-                else:
-                    # 如果无法从MIME类型中获取扩展名，则使用URL中的文件名
-                    url_filename = os.path.basename(url)
-                    guessed_extension = mimetypes.guess_extension(mimetypes.guess_type(url_filename)[0])
-                    if guessed_extension:
-                        filename = manual_filename + guessed_extension
+    
+    # 处理手动指定的文件名
+    filename = None
+    extension = None
+    custom_extension = None
+    
+    if custom_filename:
+        filename = custom_filename
+        # 检查是否包含扩展名
+        if '.' in custom_filename and not custom_filename.endswith('.'):
+            name_parts = custom_filename.rsplit('.', 1)
+            if len(name_parts) > 1 and name_parts[1].strip():
+                custom_extension = '.' + name_parts[1].strip()
+    
+    # 重试逻辑
+    for attempt in range(max_retries):
+        temp_path = None
+        try:
+            # 初始化pycurl
+            c = pycurl.Curl()
+            
+            # 1. 首先获取头部信息
+            header_buffer = io.BytesIO()
+            c.setopt(pycurl.URL, url)
+            c.setopt(pycurl.NOBODY, 1)  # HEAD请求
+            c.setopt(pycurl.HEADERFUNCTION, header_buffer.write)
+            c.setopt(pycurl.CONNECTTIMEOUT, timeout)
+            c.setopt(pycurl.TIMEOUT, timeout)
+            c.setopt(pycurl.FOLLOWLOCATION, 1)
+            c.setopt(pycurl.MAXREDIRS, 5)
+            
+            # 设置请求头
+            header_list = [f"{k}: {v}" for k, v in default_headers.items()]
+            c.setopt(pycurl.HTTPHEADER, header_list)
+            
+            c.perform()
+            http_code = c.getinfo(pycurl.HTTP_CODE)
+            
+            if http_code != 200:
+                raise pycurl.error(f"HTTP状态码: {http_code}")
+            
+            # 解析头部信息
+            headers_text = header_buffer.getvalue().decode('utf-8', errors='ignore')
+            headers_dict = {}
+            for line in headers_text.split('\n'):
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    headers_dict[key.strip()] = value.strip()
+            
+            # 如果没有手动指定文件名，尝试自动获取
+            if not filename:
+                # 1. 从Content-Disposition获取文件名
+                if 'Content-Disposition' in headers_dict:
+                    content_disposition = headers_dict['Content-Disposition']
+                    filename_match = re.search(r'filename=["\'](.*)["\']', content_disposition)
+                    if filename_match:
+                        filename = unquote(filename_match.group(1))
                     else:
-                        filename = manual_filename
+                        filename_match = re.search(r'filename=([^;]+)', content_disposition)
+                        if filename_match:
+                            filename = unquote(filename_match.group(1).strip())
+                
+                # 2. 从URL路径获取文件名
+                if not filename:
+                    parsed_url = urlparse(url)
+                    if parsed_url.path:
+                        filename = unquote(os.path.basename(parsed_url.path))
+                        # 检查是否是有效的文件名
+                        if not filename or filename.endswith('/') or '.' not in filename:
+                            filename = None
+            
+            # 如果没有自定义扩展名，尝试从Content-Type获取
+            content_type = headers_dict.get('Content-Type', '').lower().split(';')[0].strip()
+            if not custom_extension and content_type and content_type != 'application/octet-stream':
+                guessed_extension = mimetypes.guess_extension(content_type)
+                if guessed_extension:
+                    extension = guessed_extension
+            
+            # 如果没有获取到文件名，使用URL的MD5哈希值作为文件名
+            if not filename:
+                hash_object = hashlib.md5(url.encode())
+                filename = hash_object.hexdigest()
+            
+            # 确定临时保存路径用于判断文件类型
+            temp_dir = os.path.dirname(os.path.abspath(save_path)) if save_path else os.getcwd()
+            temp_path = os.path.join(temp_dir, f"temp_{filename}")
+            
+            # 2. 下载文件内容
+            logging.info(f"开始下载: {url}")
+            
+            # 重置curl对象
+            c.reset()
+            c.setopt(pycurl.URL, url)
+            c.setopt(pycurl.CONNECTTIMEOUT, timeout)
+            c.setopt(pycurl.TIMEOUT, timeout)
+            c.setopt(pycurl.FOLLOWLOCATION, 1)
+            c.setopt(pycurl.MAXREDIRS, 5)
+            c.setopt(pycurl.HTTPHEADER, header_list)
+            
+            # 设置写入文件和进度回调
+            with open(temp_path, 'wb') as f:
+                c.setopt(pycurl.WRITEDATA, f)
+                
+                # 进度回调函数
+                def progress_callback(download_total, downloaded, upload_total, uploaded):
+                    # if download_total > 0:
+                    #     progress = (downloaded / download_total) * 100
+                    #     logging.info(f"下载进度: {progress:.2f}% ({downloaded} / {download_total})")
+                    pass
+                
+                c.setopt(pycurl.NOPROGRESS, 0)
+                c.setopt(pycurl.PROGRESSFUNCTION, progress_callback)
+                
+                c.perform()
+            
+            http_code = c.getinfo(pycurl.HTTP_CODE)
+            if http_code != 200:
+                raise pycurl.error(f"下载失败，HTTP状态码: {http_code}")
+            
+            # 文件类型检测
+            if not custom_extension:
+                mime_type = magic.magic.Magic(mime=True).from_file(temp_path)
+                file_type = magic.magic.Magic().from_file(temp_path)
+                logging.info(f"检测到的MIME类型: {mime_type}")
+                logging.info(f"检测到的文件类型: {file_type}")
+                
+                # 根据检测到的MIME类型获取扩展名
+                if not extension:
+                    guessed_extension = mimetypes.guess_extension(mime_type)
+                    if guessed_extension:
+                        extension = guessed_extension
+                
+                # 确保文件名有正确的扩展名
+                if extension:
+                    name_parts = filename.rsplit('.', 1)
+                    if len(name_parts) > 1 and name_parts[1].lower() in mimetypes.types_map.keys():
+                        # 已有合适的扩展名，保持不变
+                        pass
+                    else:
+                        # 添加或替换扩展名
+                        filename = name_parts[0] + extension
             else:
-                filename = manual_filename
-        else:
-            content_disposition = response.headers.get('content-disposition')
-            if content_disposition and 'filename=' in content_disposition:
-                filename = content_disposition.split('filename=')[-1].strip('"')
+                # 使用自定义扩展名
+                logging.info(f"使用自定义扩展名: {custom_extension}")
+                name_parts = filename.rsplit('.', 1)
+                filename = name_parts[0] + custom_extension
+            
+            # 确定最终保存路径
+            if save_path:
+                if os.path.isdir(save_path):
+                    full_path = os.path.join(save_path, filename)
+                else:
+                    # 如果提供的是完整路径，使用它
+                    full_path = save_path
             else:
-                # 如果响应头中没有文件名，则从URL中提取
-                filename = os.path.basename(url)
-
-        # 确保文件名中不包含非法字符
-        filename = ''.join(c for c in filename if c.isalnum() or c in '._- ')
-
-        # 构建完整的文件路径
-        file_path = os.path.join(folder, filename).replace("\\","/")
-
-        # 写入文件
-        print(file_path)
-        with open(file_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-
-        logging.info(f"文件已成功下载并保存为 {file_path}".replace("\\","/"))
-        return file_path.replace("\\","/")
-
-    except requests.exceptions.RequestException as e:
-        logging.error(f"下载文件时出错: {e}")
-
-        return None
+                full_path = filename
+            
+            # 确保目录存在
+            os.makedirs(os.path.dirname(os.path.abspath(full_path)), exist_ok=True)
+            
+            # 将临时文件移动到最终位置
+            shutil.move(temp_path, full_path)
+            
+            logging.info(f"文件下载完成: {full_path.replace('\\','/')}")
+            return full_path
+            
+        except pycurl.error as e:
+            errno, errmsg = e.args if len(e.args) == 2 else (None, str(e))
+            logger.error(f"下载尝试 {attempt + 1}/{max_retries} 失败: {errmsg} (errno: {errno})")
+            if attempt == max_retries - 1:
+                logger.error(f"下载失败，已达到最大重试次数: {url}")
+                # 清理临时文件
+                if temp_path and os.path.exists(temp_path):
+                    os.remove(temp_path)
+                return None
+            continue
+        except Exception as e:
+            logger.error(f"处理文件时出错: {str(e)}")
+            # 清理临时文件
+            if temp_path and os.path.exists(temp_path):
+                os.remove(temp_path)
+            return None
+        finally:
+            if 'c' in locals():
+                c.close()
+            
+    return None
 
 def ssp_bing_loading():
     global bing_data, bing_img_temp, bing_img_view
@@ -1576,7 +1733,7 @@ def ssp_bing_loading():
         bing_data=get_bing_image()
         logging.info("Bing壁纸服务器数据获取成功")
         bing_loading_text.set("加载中...2/3")
-        bing_img_temp=download_file(bing_data[0]["url"], manual_filename="bing")
+        bing_img_temp=download_file(bing_data[0]["url"], custom_filename="bing")
         occupied_file_list.append(bing_img_temp)
         logging.info("Bing壁纸图片下载成功")
         bing_loading_text.set("加载中...3/3")
@@ -1598,22 +1755,22 @@ def ssp_spotlight_loading():
         spotlight_data=get_spotlight_image()
         logging.info("Spotlight壁纸服务器数据获取成功")
         spotlight_loading_text.set("加载中...2/5")
-        spotlight_img_temp1=download_file(spotlight_data[0]["url"], manual_filename="spotlight1")
+        spotlight_img_temp1=download_file(spotlight_data[0]["url"], custom_filename="spotlight1")
         occupied_file_list.append(spotlight_img_temp1)
         spotlight_img_view1=maliang.Image(canvas_ssp, (25,360), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp1)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片1下载成功")
         spotlight_loading_text.set("加载中...3/5")
-        spotlight_img_temp2=download_file(spotlight_data[1]["url"], manual_filename="spotlight2")
+        spotlight_img_temp2=download_file(spotlight_data[1]["url"], custom_filename="spotlight2")
         occupied_file_list.append(spotlight_img_temp2)
         spotlight_img_view2=maliang.Image(canvas_ssp, (225,360), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp2)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片2下载成功")
         spotlight_loading_text.set("加载中...4/5")
-        spotlight_img_temp3=download_file(spotlight_data[2]["url"], manual_filename="spotlight3")
+        spotlight_img_temp3=download_file(spotlight_data[2]["url"], custom_filename="spotlight3")
         occupied_file_list.append(spotlight_img_temp3)
         spotlight_img_view3=maliang.Image(canvas_ssp, (25,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp3)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片3下载成功")
         spotlight_loading_text.set("加载中...5/5")
-        spotlight_img_temp4=download_file(spotlight_data[3]["url"], manual_filename="spotlight4")
+        spotlight_img_temp4=download_file(spotlight_data[3]["url"], custom_filename="spotlight4")
         occupied_file_list.append(spotlight_img_temp4)
         spotlight_img_view4=maliang.Image(canvas_ssp, (225,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp4)).scale_by_size(new_height=110))))
         logging.info("Spotlight壁纸图片4下载成功")

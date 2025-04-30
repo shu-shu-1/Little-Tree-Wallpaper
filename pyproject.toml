@@ -21,17 +21,20 @@ classifiers = [
 ]
 dependencies = [
     "colorama>=0.4.6",
-    "maliang[opt]>=3.0.3",
+    "maliang[opt]>=3.0.4",
     "plyer>=2.1.0",
+    "pycurl>=7.45.6",
     "pyperclip>=1.9.0",
     "pystray>=0.19.5",
     "requests>=2.24.0",
     "tomlkit>=0.13.2",
+    "pywin32>=310; platform_system == 'Windows'",
+    "python-magic>=0.4.27; platform_system != 'Windows'",
+    "python-magic-bin>=0.4.14; platform_system == 'Windows'"
 ]
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
-windows = ["pywin32>=310"]
 
 [project.urls]
 Homepage = "https://github.com/yourusername/Little-Tree-Wallpaper"
@@ -44,8 +47,14 @@ build-backend = "setuptools.build_meta"
 
 
 [[tool.uv.index]]
+name = "tsinghua"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 default = true
 
 [tool.uv.workspace]
 members = ["Little-Tree-Wallpaper"]
+
+[tool.uv.sources]
+pywin32 = {index = "tsinghua",marker = "platform_system == 'Windows'" }
+python-magic-bin = {index = "tsinghua",marker = "platform_system == 'Windows'" }
+python-magic = {index = "tsinghua",marker = "platform_system != 'Windows'" }

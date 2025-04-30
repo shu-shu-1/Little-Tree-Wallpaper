@@ -2,7 +2,8 @@ version = 1
 revision = 1
 requires-python = ">=3.12"
 resolution-markers = [
-    "sys_platform != 'darwin'",
+    "sys_platform != 'darwin' and sys_platform != 'win32'",
+    "sys_platform == 'win32'",
     "sys_platform == 'darwin'",
 ]
 
@@ -108,8 +109,12 @@ dependencies = [
     { name = "colorama" },
     { name = "maliang", extra = ["opt"] },
     { name = "plyer" },
+    { name = "pycurl" },
     { name = "pyperclip" },
     { name = "pystray" },
+    { name = "python-magic", marker = "sys_platform != 'win32'" },
+    { name = "python-magic-bin", marker = "sys_platform == 'win32'" },
+    { name = "pywin32", marker = "sys_platform == 'win32'" },
     { name = "requests" },
     { name = "tomlkit" },
 ]
@@ -118,34 +123,34 @@ dependencies = [
 test = [
     { name = "pytest" },
 ]
-windows = [
-    { name = "pywin32" },
-]
 
 [package.metadata]
 requires-dist = [
     { name = "colorama", specifier = ">=0.4.6" },
-    { name = "maliang", extras = ["opt"], specifier = ">=3.0.3" },
+    { name = "maliang", extras = ["opt"], specifier = ">=3.0.4" },
     { name = "plyer", specifier = ">=2.1.0" },
+    { name = "pycurl", specifier = ">=7.45.6" },
     { name = "pyperclip", specifier = ">=1.9.0" },
     { name = "pystray", specifier = ">=0.19.5" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=7.0" },
-    { name = "pywin32", marker = "extra == 'windows'", specifier = ">=310" },
+    { name = "python-magic", marker = "sys_platform != 'win32'", specifier = ">=0.4.27", index = "https://pypi.tuna.tsinghua.edu.cn/simple" },
+    { name = "python-magic-bin", marker = "sys_platform == 'win32'", specifier = ">=0.4.14", index = "https://pypi.tuna.tsinghua.edu.cn/simple" },
+    { name = "pywin32", marker = "sys_platform == 'win32'", specifier = ">=310", index = "https://pypi.tuna.tsinghua.edu.cn/simple" },
     { name = "requests", specifier = ">=2.24.0" },
     { name = "tomlkit", specifier = ">=0.13.2" },
 ]
-provides-extras = ["test", "windows"]
+provides-extras = ["test"]
 
 [[package]]
 name = "maliang"
-version = "3.0.3"
+version = "3.0.4"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 dependencies = [
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/ce/36/d10a790cd912cbbc83c396891e645643244b9308444e5633b7474599a7c6/maliang-3.0.3.tar.gz", hash = "sha256:35a9e5e8c2bcfae5c77277b8d530aaaad0294acf146ab5903f7cb8747399ea0b", size = 7123812 }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/92/de/9d809ce6f74acd897b5a03fb2973dbb7f62d38250ac21e6e88a62ecdbd3e/maliang-3.0.4.tar.gz", hash = "sha256:8d379ac435b6ce85d718e6020d12c3fa42f7eebc02c1ba1b16313ade0eeebb16", size = 7124131 }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/04/ce/a3407be98082b94f3244a428dc2b8da2720b3d617ee6ccd84b4693317228/maliang-3.0.3-py3-none-any.whl", hash = "sha256:684b070b7a9dc0ec36aaa26a2bd3c2e7d251f49ce4e027e0e29c4cb95cc1b0bf", size = 65823 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c6/75/0bcec2d8c324a6048d0070fd936e9eec876d7c91065ef930644bef245bdc/maliang-3.0.4-py3-none-any.whl", hash = "sha256:0939f3f51a02b916c3e47bf5f8e43d8486122fe12638dbe8bdab4761d36f19c7", size = 66009 },
 ]
 
 [package.optional-dependencies]
@@ -224,6 +229,26 @@ wheels = [
 ]
 
 [[package]]
+name = "pycurl"
+version = "7.45.6"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/71/35/fe5088d914905391ef2995102cf5e1892cf32cab1fa6ef8130631c89ec01/pycurl-7.45.6.tar.gz", hash = "sha256:2b73e66b22719ea48ac08a93fc88e57ef36d46d03cb09d972063c9aa86bb74e6", size = 239470 }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/0a/31/01e3ae56940c9aff2886f06a660641ec779d7265aef8b3bd981add67f3a9/pycurl-7.45.6-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:c872d4074360964697c39c1544fe8c91bfecbff27c1cdda1fee5498e5fdadcda", size = 3499118 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/02/b2/365423ac0f8d13afffb28e6f3d6bf1aae242934f16ae3eda5f3615c0e978/pycurl-7.45.6-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:56d1197eadd5774582b259cde4364357da71542758d8e917f91cc6ed7ed5b262", size = 3640501 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/67/d6/7d24b60ee878167e3cef6d37fad7d15cf660c0d510539d1417fd59665d1b/pycurl-7.45.6-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:8a99e56d2575aa74c48c0cd08852a65d5fc952798f76a34236256d5589bf5aa0", size = 4893499 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/24/8c/c84df085310f2489e293adc7880f82339f50dcd6cf9dba2750b81eaf11d4/pycurl-7.45.6-cp312-cp312-manylinux_2_28_x86_64.whl", hash = "sha256:c04230b9e9cfdca9cf3eb09a0bec6cf2f084640f1f1ca1929cca51411af85de2", size = 4576761 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/bc/a2/682c909d93c27b6c6cd369c5427fee87c525e02c56e1a985c150a2d451fd/pycurl-7.45.6-cp312-cp312-win32.whl", hash = "sha256:ae893144b82d72d95c932ebdeb81fc7e9fde758e5ecd5dd10ad5b67f34a8b8ee", size = 2605115 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/71/42/b1189c859cec1bdb00c93177e8bdee7c75b23a0e30eba41da637b40444c1/pycurl-7.45.6-cp312-cp312-win_amd64.whl", hash = "sha256:56f841b6f2f7a8b2d3051b9ceebd478599dbea3c8d1de8fb9333c895d0c1eea5", size = 3132702 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/23/5f/dcdec890d76d3a6da4706667f8a6f192ff0b87afa20a4ef8d42cfb2e4e9f/pycurl-7.45.6-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:7c09b7180799af70fc1d4eed580cfb1b9f34fda9081f73a3e3bc9a0e5a4c0e9b", size = 3499049 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/89/1a/7d16ddecb88e1bff744dbdb3dcddbcdbe1925af739f5dd41812ca65ed3b2/pycurl-7.45.6-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:361bf94b2a057c7290f9ab84e935793ca515121fc012f4b6bef6c3b5e4ea4397", size = 3640534 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/e4/af/f915a8984edb8b7fc3a8e5680f39ea09a10bea0c3582cd2d19dc1adfd951/pycurl-7.45.6-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:bb9eff0c7794af972da769a887c87729f1bcd8869297b1c01a2732febbb75876", size = 4893877 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/4e/12/9c167d44f306d0e2983fa1d8d4fe2e3e7e74801738372147e4175e58dbdf/pycurl-7.45.6-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:26839d43dc7fff6b80e0067f185cc1d0e9be2ae6e2e2361ae8488cead5901c04", size = 4577117 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/77/59/fe0fe11c2d8ceef9b5f40b244c76da6bd1906e78be4e7d239144c3e88763/pycurl-7.45.6-cp313-cp313-win32.whl", hash = "sha256:a721c2696a71b1aa5ecf82e6d0ade64bc7211b7317f1c9c66e82f82e2264d8b4", size = 2605142 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b3/54/2c252485aac80150aef1de69b95fa7885b74e3ae1911b67b962e07e8b9aa/pycurl-7.45.6-cp313-cp313-win_amd64.whl", hash = "sha256:f0198ebcda8686b3a0c66d490a687fa5fd466f8ecc2f20a0ed0931579538ae3d", size = 3132790 },
+]
+
+[[package]]
 name = "pyobjc-core"
 version = "11.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
@@ -299,11 +324,29 @@ wheels = [
 ]
 
 [[package]]
+name = "python-magic"
+version = "0.4.27"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/da/db/0b3e28ac047452d079d375ec6798bf76a036a08182dbb39ed38116a49130/python-magic-0.4.27.tar.gz", hash = "sha256:c1ba14b08e4a5f5c31a302b7721239695b2f0f058d125bd5ce1ee36b9d9d3c3b", size = 14677 }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/6c/73/9f872cb81fc5c3bb48f7227872c28975f998f3e7c2b1c16e95e6432bbb90/python_magic-0.4.27-py2.py3-none-any.whl", hash = "sha256:c212960ad306f700aa0d01e5d7a325d20548ff97eb9920dcd29513174f0294d3", size = 13840 },
+]
+
+[[package]]
+name = "python-magic-bin"
+version = "0.4.14"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/5a/5d/10b9ac745d9fd2f7151a2ab901e6bb6983dbd70e87c71111f54859d1ca2e/python_magic_bin-0.4.14-py2.py3-none-win32.whl", hash = "sha256:34a788c03adde7608028203e2dbb208f1f62225ad91518787ae26d603ae68892", size = 397784 },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/07/c2/094e3d62b906d952537196603a23aec4bcd7c6126bf80eb14e6f9f4be3a2/python_magic_bin-0.4.14-py2.py3-none-win_amd64.whl", hash = "sha256:90be6206ad31071a36065a2fc169c5afb5e0355cbe6030e87641c6c62edc2b69", size = 409299 },
+]
+
+[[package]]
 name = "python-xlib"
 version = "0.33"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 dependencies = [
-    { name = "six", marker = "sys_platform != 'darwin'" },
+    { name = "six", marker = "sys_platform != 'darwin' and sys_platform != 'win32'" },
 ]
 sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/86/f5/8c0653e5bb54e0cbdfe27bf32d41f27bc4e12faa8742778c17f2a71be2c0/python-xlib-0.33.tar.gz", hash = "sha256:55af7906a2c75ce6cb280a584776080602444f75815a7aff4d287bb2d7018b32", size = 269068 }
 wheels = [
