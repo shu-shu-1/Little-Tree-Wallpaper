@@ -32,6 +32,7 @@ dependencies = [
     "python-magic>=0.4.27; platform_system != 'Windows'",
     "python-magic-bin>=0.4.14; platform_system == 'Windows'",
     "filetype>=1.2.0",
+    "psutil>=7.0.0; platform_system == 'Windows'",
 ]
 
 [project.optional-dependencies]

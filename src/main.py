@@ -49,6 +49,7 @@ import argparse
 import hashlib
 
 # 非标准库
+import psutil
 import pycurl
 import pystray
 import requests
@@ -2560,7 +2561,7 @@ if platform.system() == "Windows":
                 cmd = [
                     'mpv', '--title=MPV-{}'.format(idx),
                     '--no-border',
-                    '--loop=inf',
+                    '--loop-file=inf',
                     '--fs',
                     '--geometry={}x{}+{}+{}'.format(
                         monitor['width'],
@@ -2607,8 +2608,23 @@ if platform.system() == "Windows":
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 def show_debug_panel():
     debug_root = maliang.Toplevel(root,title=f"小树壁纸 调试面板 | {VER}+{BUILD_VER} ({INSIDE_VER})")
-
-
+    canvas_debug = maliang.Canvas(debug_root, auto_zoom=True, keep_ratio="min", free_anchor=True)
+    canvas_debug.place(x=0, y=0, width=960, height=540)
+    maliang.Text(canvas_debug, (50, 50), text="测试信息", fontsize=40, anchor="nw")
+    maliang.Text(canvas_debug, (50, 100), text=f"版本[{VER}] 内部版本[{INSIDE_VER}] 构建信息[{BUILD_VER}]", fontsize=20, anchor="nw")
+    maliang.Text(canvas_debug, (50, 140), text="动态壁纸", fontsize=40, anchor="nw")
+    def choose_video():
+        logging.info("[测试]开启动态壁纸")
+        play_video_as_wallpaper(filedialog.askopenfilename(title="选择视频文件", filetypes=[("视频文件", "*.mp4;*.mkv;*.avi")]))
+    def close_video():
+        logging.info("[测试]关闭动态壁纸")
+        for proc in psutil.process_iter(['pid', 'name']):
+            if proc.info['name'] == 'mpv.exe':  
+                logging.info(f"查找到Mpv的PID: {proc.info['pid']}")
+                os.system(f"taskkill /F /PID {proc.info['pid']}")
+                logging.info(f"已关闭Mpv(pid: {proc.info['pid']})")
+    maliang.Button(canvas_debug, (50, 200), text="选择视频", command=choose_video)
+    maliang.Button(canvas_debug, (200, 200), text="关闭", command=close_video)
     debug_root.mainloop()
 
 ### ✨ 设置面板
