@@ -30,16 +30,17 @@ dependencies = [
     "tomlkit>=0.13.2",
     "pywin32>=310; platform_system == 'Windows'",
     "python-magic>=0.4.27; platform_system != 'Windows'",
-    "python-magic-bin>=0.4.14; platform_system == 'Windows'"
+    "python-magic-bin>=0.4.14; platform_system == 'Windows'",
+    "filetype>=1.2.0",
 ]
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/Little-Tree-Wallpaper"
-Documentation = "https://github.com/yourusername/Little-Tree-Wallpaper#readme"
-Issues = "https://github.com/yourusername/Little-Tree-Wallpaper/issues"
+Homepage = "https://github.com/shu-shu-1/Little-Tree-Wallpaper"
+Documentation = "https://github.com/shu-shu-1/Little-Tree-Wallpaper#readme"
+Issues = "https://github.com/shu-shu-1/Little-Tree-Wallpaper/issues"
 
 [build-system]
 requires = ["setuptools>=42"]
@@ -58,3 +59,8 @@ members = ["Little-Tree-Wallpaper"]
 pywin32 = {index = "tsinghua",marker = "platform_system == 'Windows'" }
 python-magic-bin = {index = "tsinghua",marker = "platform_system == 'Windows'" }
 python-magic = {index = "tsinghua",marker = "platform_system != 'Windows'" }
+
+[dependency-groups]
+dev = [
+    "nuitka>=2.7",
+]

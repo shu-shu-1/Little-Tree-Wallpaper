@@ -50,12 +50,12 @@ import argparse
 import hashlib
 
 # 非标准库
-import magic.magic
 import pycurl
 import pystray
 import requests
 import concurrent
-import magic
+import magic.magic
+import filetype
 import ltwpAPI.image
 import ltwpAPI.wallpaper
 import ltwpAPI.config
@@ -122,7 +122,7 @@ else:
 # 功能: 初始化一些变量
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-occupied_file_list=[] #? 缓存/日志清理排除文件列表
+occupied_file_list=["/logs/latest.log"] #? 缓存/日志清理排除文件列表
 
 is_choose = None #? 按钮选择
 is_load_main: bool = False #? 是否已经加载主界面
@@ -381,6 +381,25 @@ def check_api_accessibility_and_latency(api_dict : dict):
         recursive_check(endpoints, source)
 
     return results
+
+def remove_exif(image: Image.Image) -> Image.Image:
+    """
+    移除图片的EXIF数据。
+
+    Args:
+        image (PIL.Image.Image): 输入的图片对象。
+
+    Returns:
+        PIL.Image.Image: 不包含EXIF数据的新图片对象。
+    """
+    # 创建一个BytesIO对象来保存图片数据
+    img_data = io.BytesIO()
+    
+    # 将图片保存到BytesIO对象中，不包含EXIF数据
+    image.save(img_data, format=image.format, exif=b'')
+    
+    # 从BytesIO对象中读取图片数据并返回新的Image对象
+    return Image.open(img_data)
 
 
 def get_file_count(folder_path) -> int:
@@ -921,7 +940,9 @@ logger.setLevel(logging.DEBUG)
 
 # 创建文件处理器
 file_handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
+latest_log_file_handler = logging.FileHandler("./logs/latest.log", encoding='utf-8')
 file_handler.setLevel(logging.DEBUG)
+latest_log_file_handler.setLevel(logging.DEBUG)
 # 创建控制台处理器
 stream_handler = logging.StreamHandler()
 stream_handler.setLevel(logging.INFO)
@@ -930,10 +951,12 @@ stream_handler.setLevel(logging.INFO)
 formatter = logging.Formatter(LOG_FORMAT)
 # 将格式化器添加到处理器
 file_handler.setFormatter(formatter)
+latest_log_file_handler.setFormatter(formatter)
 stream_handler.setFormatter(formatter)
 
 # 将处理器添加到日志记录器
 logger.addHandler(file_handler)
+logger.addHandler(latest_log_file_handler)
 logger.addHandler(stream_handler)
 
 with open(LOG_FILE, 'w', encoding='utf-8') as f:
@@ -943,6 +966,15 @@ with open(LOG_FILE, 'w', encoding='utf-8') as f:
     运行平台信息: {platform.platform()}
     Python版本: {platform.python_version()}
     日志文件: {LOG_FILE}
+{"-"*50}
+""")
+with open("./logs/latest.log", 'w', encoding='utf-8') as f:
+    f.write(f"""{"-"*50}
+    小树壁纸日志信息
+    小树壁纸 | 当前版本: {VER} 内部版本: {INSIDE_VER} 构建版本: {BUILD_VER}
+    运行平台信息: {platform.platform()}
+    Python版本: {platform.python_version()}
+    日志文件: ./logs/latest.log
 {"-"*50}
 """)
 logging.info("日志初始化成功")
@@ -1300,7 +1332,6 @@ root.resizable(width=False, height=False)
 ### ✨ 页面切换
 def clean_page():
     canvas_index.place_forget()
-    canvas_test.place_forget()
     canvas_setting.place_forget()
     canvas_about.place_forget()
     canvas_egg.place_forget()
@@ -1310,9 +1341,6 @@ def clean_page():
     canvas_wallpaper_detail.place_forget()
     canvas_wallpaper_more_360_download.pack_forget()
 
-def test_info():
-    canvas_loading.place_forget()
-    canvas_test.place(width=1280, height=720, x=640, y=360, anchor="center")
 
 def egg():
     # maliang.dialogs.TkMessage(icon="info",title="彩蛋",message="你发现了一个彩蛋！",detail="你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！\n\n你发现了一个彩蛋！")
@@ -1378,7 +1406,6 @@ def main():
     animation.MoveTkWidget(canvas_index, (0, 720), 100, fps=60, controller=animation.smooth).start(delay=100)
 
     time.sleep(1)
-    canvas_test.place_forget()
     canvas_setting.place_forget()
     canvas_about.place_forget()
     canvas_egg.place_forget()
@@ -1390,20 +1417,7 @@ def main():
 
     # canvas_index.update_idletasks()
     # canvas_index.zoom()
-### ✨ 测试信息
-canvas_test = maliang.Canvas(root, auto_zoom=True, keep_ratio="min", free_anchor=True)
-maliang.Text(canvas_test, (50, 50), text="测试信息", fontsize=40, anchor="nw")
-test_info_text="""感谢您参与小树壁纸SSP(自启动面板)的测试！
-如果您有任何意见或建议，欢迎您在Github上提出issue或PR。
-同时也欢迎您关注我们的其他版本：
 
-- 小树壁纸Next：https://github.com/shu-shu-1/Xiaoshu-Wallpaper-Next
-- 小树壁纸Future (C#开发)：敬请期待
-"""
-maliang.Text(canvas_test, (50, 100), text=test_info_text, fontsize=25, anchor="nw")
-maliang.Button(canvas_test, (50, 600), text="开始测试", command=main)
-# maliang.Text(canvas_test, (1280, 720), text=xf"版本：{VER} 内部版本：{software_VER} 构建信息：{BUILD_VER}", fontsize=20, anchor="se")
-canvas_test.create_text(1280, 720, text=f"小树壁纸 版本：{VER} 内部版本：{INSIDE_VER} 构建信息：{BUILD_VER}", font=("MiSans",20),anchor="se", fill="gray")
 ### ✨ 启动加载
 
 
@@ -1513,7 +1527,6 @@ def fetch_latest_release(
 def download_file(url, save_path="./temp", custom_filename=None, timeout=30, max_retries=3, headers=None):
     """
     使用pycurl高效下载文件并根据多种情况自动判断文件格式和文件名
-    本函数已在V6.0.0 RC2重构
     
     参数:
         url (str): 要下载的文件URL
@@ -1658,10 +1671,21 @@ def download_file(url, save_path="./temp", custom_filename=None, timeout=30, max
             
             # 文件类型检测
             if not custom_extension:
-                mime_type = magic.magic.Magic(mime=True).from_file(temp_path)
-                file_type = magic.magic.Magic().from_file(temp_path)
-                logging.info(f"检测到的MIME类型: {mime_type}")
-                logging.info(f"检测到的文件类型: {file_type}")
+                try:
+                    mime_type = magic.magic.Magic(mime=True).from_file(temp_path)
+                    file_type = magic.magic.Magic().from_file(temp_path)
+                    logging.info(f"[方式1]检测到的MIME类型: {mime_type}")
+                    logging.info(f"[方式1]检测到的文件类型: {file_type}")
+                except Exception as e:
+                    logging.warning(f"使用magic检测文件类型失败: {e}")
+                    try:
+                        mime_type = filetype.guess_mime(temp_path)
+                        file_type = filetype.guess_extension(temp_path)
+                        logging.info(f"[方式2]检测到的MIME类型: {mime_type}")
+                        logging.info(f"[方式2]检测到的文件类型: {file_type}")
+                    except Exception as e:
+                        logging.error(f"使用filetype检测文件格式失败：{e}")
+                        raise "文件格式检测失败"
                 
                 # 根据检测到的MIME类型获取扩展名
                 if not extension:
@@ -1705,16 +1729,16 @@ def download_file(url, save_path="./temp", custom_filename=None, timeout=30, max
             
         except pycurl.error as e:
             errno, errmsg = e.args if len(e.args) == 2 else (None, str(e))
-            logger.error(f"下载尝试 {attempt + 1}/{max_retries} 失败: {errmsg} (errno: {errno})")
+            logging.error(f"下载尝试 {attempt + 1}/{max_retries} 失败: {errmsg} (errno: {errno})")
             if attempt == max_retries - 1:
-                logger.error(f"下载失败，已达到最大重试次数: {url}")
+                logging.error(f"下载失败，已达到最大重试次数: {url}")
                 # 清理临时文件
                 if temp_path and os.path.exists(temp_path):
                     os.remove(temp_path)
                 return None
             continue
         except Exception as e:
-            logger.error(f"处理文件时出错: {str(e)}")
+            logging.error(f"处理文件时出错: {str(e)}")
             # 清理临时文件
             if temp_path and os.path.exists(temp_path):
                 os.remove(temp_path)

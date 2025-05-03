@@ -1,6 +1,8 @@
 *.spec
 start.cmd
 start.sh
+main.exe
+nuitka-crash-report.xml
 __pycache__
 .env/
 .venv/
@@ -10,6 +12,9 @@ temp/
 logs/
 dist/
 build/
+main.build/
+main.dist/
+main.onefile-build/
 src/temp/
 src/logs/
 src/tests/
