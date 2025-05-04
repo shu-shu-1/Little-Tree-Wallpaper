@@ -27,6 +27,8 @@
 
 
 # 标准库
+from concurrent.futures import ThreadPoolExecutor
+import concurrent
 import sys
 import queue
 import traceback
@@ -53,7 +55,6 @@ import psutil
 import pycurl
 import pystray
 import requests
-import concurrent
 import magic.magic
 import filetype
 import ltwpAPI.image
@@ -65,7 +66,6 @@ import maliang.core.configs as configs
 import maliang.theme as theme
 import maliang.toolbox as toolbox
 import tkinter.filedialog as filedialog
-from concurrent.futures import ThreadPoolExecutor
 from plyer import notification
 from PIL import Image, ImageFile
 from colorama import Fore, Style

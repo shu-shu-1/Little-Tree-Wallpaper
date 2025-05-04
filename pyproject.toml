@@ -56,11 +56,6 @@ default = true
 [tool.uv.workspace]
 members = ["Little-Tree-Wallpaper"]
 
-[tool.uv.sources]
-pywin32 = {index = "tsinghua",marker = "platform_system == 'Windows'" }
-python-magic-bin = {index = "tsinghua",marker = "platform_system == 'Windows'" }
-python-magic = {index = "tsinghua",marker = "platform_system != 'Windows'" }
-
 [dependency-groups]
 dev = [
     "nuitka>=2.7",
