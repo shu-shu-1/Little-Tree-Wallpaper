@@ -1,24 +1,69 @@
 # -*- coding: utf-8 -*-
-# --------------------
-# This program is part of the Little Tree Wallpaper project
-# main.py is the program's entry file.
-# 本程序是小树壁纸项目的组成部分
-# main.py 是本程序的入口文件
-# --------------------
-# Little Tree Wallpaper is a free and open-source program released under the GNU AFFERO GENERAL PUBLIC LICENSE Version 3, 19 November 2007 license.
-# Please abide by the content of this agreement, otherwise we have the right to pursue legal responsibility.
-# 小树壁纸是基于 GNU Affero 通用公共许可证第三版（2007年11月19日发布）(AGPLv3) 发布的自由的免费开源程序
-# 请遵守该协议内容，否则我们有权追究您法律责任。
-# --------------------
-# If you make any changes to this code or use any code of this program, please open source the code of your program and keep the copyright information of the Little Tree Wallpaper
-# 如果您对本代码产生任何改动或使用了本程序任何代码，请您将您程序的代码开源，并保留小树壁纸的版权信息。
-# --------------------
-# Copyright © 2023-2025 Little Tree Wallpaper Project Group. Some rights reserved.
-# 版权所有 © 2023-2025 小树壁纸项目组。保留部分权利。
-# Copyright © 2022-2025 Little Tree Studio. Some rights reserved.
-# 版权所有 © 2023-2025 小树工作室。保留部分权利。
-# Copyright © Xiaoshu. Some rights reserved.
-# 版权所有 © 小树。保留部分权利。
+#
+# File: main.py
+# Project: Little Tree Wallpaper
+# Description: Entry point for the Little Tree Wallpaper application.
+#              本文件为 Little Tree Wallpaper 程序入口文件。
+#
+# Little Tree Wallpaper is a free and open-source program released under the
+# GNU Affero General Public License Version 3, 19 November 2007.
+# 小树壁纸 是一个自由和开源程序，基于 GNU AFFERO GENERAL PUBLIC LICENSE v3（2007年11月19日）发布。
+#
+# If you make any changes to this code or use any code of this program,
+# you must open source the code of your program and keep the copyright
+# information of Little Tree Wallpaper.
+# 如果你对该代码做出任何修改或使用了本项目的任何代码，必须开源你的程序代码，并保留 小树壁纸 的版权声明。
+#
+# Please abide by the content of this agreement (AGPLv3), otherwise we have
+# the right to pursue legal responsibility.
+# 请遵守 AGPL v3 协议，否则我们有权追究法律责任。
+#
+# Copyright (c) 2023-2025 Little Tree Wallpaper Project Group.
+# Copyright (c) 2022-2025 Little Tree Studio.
+# Copyright (c) 2023-2025 Xiaoshu.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 本程序为自由软件；你可以遵循 GNU Affero General Public License 3.0 或更高版本，
+# 重新发布和（或）修改本程序。
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License for more details.
+# 本程序以希望对他人有用为目标而发布，但不做任何担保；
+# 也没有适销性或针对特定目的适用性的默示担保。详见许可证全文。
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program. If not, see <https://www.gnu.org/licenses/>.
+# 你应该已经收到了一份 GNU AGPL 许可证的副本，如果没有，请访问 <https://www.gnu.org/licenses/> 查看。
+#
+# Project repository / 项目仓库: https://github.com/shu-shu-1/Little-Tree-Wallpaper
+#
+
+"""
+Little Tree Wallpaper
+
+main.py is the primary entry point to start and manage the Little Tree Wallpaper application.
+
+Use:
+    python main.py [options]
+
+For more information, see the project repository and README.
+
+----------------------------
+
+Little Tree Wallpaper
+
+main.py 是启动和管理 小树壁纸 应用程序的主入口文件。
+
+用法示例:
+    python main.py [参数]
+
+更多信息请参见项目仓库和 README 文件。
+"""
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 导入
@@ -27,7 +72,6 @@
 
 
 # 标准库
-from concurrent.futures import ThreadPoolExecutor
 import concurrent
 import sys
 import queue
@@ -39,7 +83,7 @@ import subprocess
 import threading
 import io
 import os
-import logging
+import uuid
 import time
 import json
 import math
@@ -66,12 +110,14 @@ import maliang.core.configs as configs
 import maliang.theme as theme
 import maliang.toolbox as toolbox
 import tkinter.filedialog as filedialog
+from pathlib import Path
+from loguru import logger
 from plyer import notification
 from PIL import Image, ImageFile
 from colorama import Fore, Style
 from functools import lru_cache
-from importlib.util import find_spec
 from urllib.parse import urlparse, unquote
+from concurrent.futures import ThreadPoolExecutor
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 库设置
@@ -91,11 +137,11 @@ configs.Font.size = -24 #? 设置字体大小
 DEBUG_MODE = True #?是否开启调试模式
 DEBUG_MODE_NO_LOADING_IMAGE = False #?是否不加载图片
 
-VER = "v6.0.0-rc.2" #? 主版本号
-INSIDE_VER = "6.0.0.rc.2.t25" #? 内部版本号
-BUILD_VER = "PY.TK.CORE.20250430001" #? 构建版本号
+VER = "v6.0.0-rc.3" #? 主版本号
+INSIDE_VER = "6.0.0.rc.3.t1" #? 内部版本号
+BUILD_VER = "PY.TK.CORE.20250614001" #? 构建版本号
 
-IS_PUBLIC = True #? 是否为公开版本
+IS_BUILT = False #? 是否为已构建版本
 IS_TEST_VERSION = True #? 是否为测试版本
 
 #? 下载 UserAgent(UA) 设置
@@ -204,11 +250,7 @@ console_args = parser.parse_args(sys.argv[1:])
 # 功能: 检查系统环境并给出提示/导入库
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-if platform.system() == "Windows" and find_spec("win32clipboard") is None and find_spec("win32gui") is None and find_spec("win32api") is None and find_spec("win32con") is None:
-    print(Fore.RED + "[启动检查不通过]缺少pywin32库，请安装后重试！" + Style.RESET_ALL)
-    maliang.dialogs.TkMessage("您当前使用的是Windows平台，但是您未安装pywin32库，请安装后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
 if platform.system() == "Windows":
-    print(platform.win32_ver()[0])
     if not (platform.win32_ver()[0] == "10" or platform.win32_ver()[0] == "11"):
         print(Fore.RED + "[启动检查不通过]小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！" + Style.RESET_ALL)
         maliang.dialogs.TkMessage("小树壁纸目前不支持版本低于10的Windows系统，请更换系统后重试！",detail="如果您是在构建后的程序(下载版)中遇到此问题，请联系开发团队。",title="小树壁纸-启动检查",icon="error")
@@ -230,7 +272,7 @@ print(Fore.GREEN + f"[启动检查通过]当前系统环境为{platform.system()
 # 功能: 测试版警告信息、单独设置
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-if IS_PUBLIC and IS_TEST_VERSION:
+if IS_BUILT and IS_TEST_VERSION:
     print(f"{Fore.YELLOW}警告")
     print(f"{Fore.YELLOW}-----------------------------------------------")
     print(f"{Fore.YELLOW}当前是开发版本，请谨慎使用！")
@@ -240,12 +282,12 @@ if IS_PUBLIC and IS_TEST_VERSION:
 elif IS_TEST_VERSION:
     print(f"{Fore.YELLOW}警告")
     print(f"{Fore.YELLOW}-----------------------------------------------")
-    print(f"{Fore.YELLOW}当前是{Style.RESET_ALL}{Fore.RED}内部未公开{Style.RESET_ALL}{Fore.YELLOW}的开发版本，请谨慎使用！")
-    print(f"{Fore.YELLOW}内部测试版本不能代表最终品质，请勿外泄，请以正式版为准！")
+    print(f"{Fore.YELLOW}当前是{Style.RESET_ALL}{Fore.RED}未构建{Style.RESET_ALL}{Fore.YELLOW}的开发版本，请谨慎使用！")
+    print(f"{Fore.YELLOW}直接基于最新源代码构建的版本不能代表最终品质，请以正式版为准！")
     print(f"{Fore.YELLOW}-----------------------------------------------")
     print(f"{Style.RESET_ALL}")
-if not IS_PUBLIC:
-    maliang.dialogs.TkMessage(title="警告", message="当前是内部测试版本，请勿外泄，请以正式版为准！", icon="warning", option="ok")
+if not IS_BUILT:
+    maliang.dialogs.TkMessage(title="警告", message="当前版本非已构建的正式版，请以正式版为准！", icon="warning", option="ok")
 if not DEBUG_MODE:
     sys.stdout = open(os.devnull, 'w')
 
@@ -266,11 +308,11 @@ def new_folder(folder_name: str) -> None:
     不进行任何操作。如果文件夹不存在，则会创建该文件夹，并记录一条成功创建的信息。
     """
     if os.path.exists(folder_name):
-        logging.info(f"文件夹“{folder_name}”已存在")
+        logger.info(f"文件夹“{folder_name}”已存在")
         return
     else:
         os.makedirs(folder_name)
-        logging.info(f"创建文件夹“{folder_name}”成功")
+        logger.info(f"创建文件夹“{folder_name}”成功")
 
 
 def get_executable_directory() -> str:
@@ -658,7 +700,7 @@ def copy_image_to_clipboard(image_path) -> None:
                     subprocess.run(["xsel", "--clipboard", "--input", "--type", "image/png", "<", tmp_file.name], check=True, shell=True)
 
     except Exception as e:
-        logging.error(f"复制图片到剪贴板失败: {e}")
+        logger.error(f"复制图片到剪贴板失败: {e}")
 
 
 
@@ -669,7 +711,7 @@ def get_my_pictures_path() -> str:
     Returns:
         str: 用户图片文件夹路径。
     """
-    logging.info("调用读取图片文件夹路径函数")
+    logger.info("调用读取图片文件夹路径函数")
 
     if sys.platform == "linux":
         try:
@@ -697,7 +739,7 @@ def get_my_pictures_path() -> str:
                 # 方案3: 最终回退到 ~/Pictures
                 return os.path.expanduser("~/Pictures")
         except Exception as e:
-            logging.error(f"Linux 平台未知错误: {e}")
+            logger.error(f"Linux 平台未知错误: {e}")
 
             maliang.dialogs.TkMessage(
                 icon="error",
@@ -720,7 +762,7 @@ def get_my_pictures_path() -> str:
             # 展开可能的环境变量（如 %USERPROFILE%）
             return os.path.expandvars(my_pictures_path)
         except OSError as error:
-            logging.error(f"注册表读取错误: {error}")
+            logger.error(f"注册表读取错误: {error}")
             print(f"错误: {error.strerror}")
             maliang.dialogs.TkMessage(
                 icon="error",
@@ -730,7 +772,7 @@ def get_my_pictures_path() -> str:
             )
             raise
         except Exception as e:
-            logging.error(f"未知错误: {e}")
+            logger.error(f"未知错误: {e}")
 
             maliang.dialogs.TkMessage(
                 icon="error",
@@ -752,7 +794,7 @@ def validate_image_file(path):
                         raise ValueError("可疑的EXIF结构")
         return True
     except Exception as e:
-        logging.error(f"无效图片: {str(e)}")
+        logger.error(f"无效图片: {str(e)}")
         return False
 def determine_image_format(image_path: str) -> str:
     """
@@ -764,16 +806,16 @@ def determine_image_format(image_path: str) -> str:
     try:
         validate_image_file(image_path)
     except Exception as e:
-        logging.error(f"无效图片: {str(e)}")
+        logger.error(f"无效图片: {str(e)}")
         return None
 
     try:
         with Image.open(image_path) as img:
             format = img.format
-            logging.info(f"图片格式为{format}")
+            logger.info(f"图片格式为{format}")
             return format
     except IOError:
-        logging.error(f"无法打开图片文件: {image_path}")
+        logger.error(f"无法打开图片文件: {image_path}")
 
         return None
 
@@ -796,10 +838,10 @@ def change_file_extension(file_path, new_extension):
     try:
         os.rename(file_path, new_file_path)
         # print(f"File renamed to {new_file_path}")
-        logging.info(f"{file_path}文件重命名为{new_file_path}".replace("\\","/"))
+        logger.info(f"{file_path}文件重命名为{new_file_path}".replace("\\","/"))
         return new_file_path
     except OSError as e:
-        logging.error(f"无法重命名文件: {e}")
+        logger.error(f"无法重命名文件: {e}")
 
         return None
 
@@ -918,6 +960,16 @@ def get_spotlight_image() -> list:
         raise Exception(f'Windows Spotlight API获取失败: {e}')
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# 模块: 需获取常量
+# 功能: 定义一些需要获取的常量
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+# Path
+PATH_USER_PICTURES = Path(get_my_pictures_path())
+PATH_DEFAULT_DOWNLOADS = PATH_USER_PICTURES / "下载"
+
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 文件夹
 # 功能: 新建一些必须的文件夹
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -931,35 +983,31 @@ new_folder(WALLPAPER_PATH)
 # 功能: 初始化日志记录器
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-# 关闭默认的日志记录器
-logging.getLogger().handlers.clear()
-# 创建日志记录器
-logger = logging.getLogger()
-# 设置日志级别
-logger.setLevel(logging.DEBUG)
 
-# 创建文件处理器
-file_handler = logging.FileHandler(LOG_FILE, encoding='utf-8')
-latest_log_file_handler = logging.FileHandler("./logs/latest.log", encoding='utf-8')
-file_handler.setLevel(logging.DEBUG)
-latest_log_file_handler.setLevel(logging.DEBUG)
-# 创建控制台处理器
-stream_handler = logging.StreamHandler()
-stream_handler.setLevel(logging.INFO)
+# 添加文件处理器（DEBUG 级别）
+logger.add(
+    LOG_FILE,
+    level="DEBUG",
+    encoding="utf-8",
+    rotation="10 MB",  # 可选：日志轮转
+    retention="30 days",  # 可选：日志保留
+)
 
-# 创建格式化器
-formatter = logging.Formatter(LOG_FORMAT)
-# 将格式化器添加到处理器
-file_handler.setFormatter(formatter)
-latest_log_file_handler.setFormatter(formatter)
-stream_handler.setFormatter(formatter)
+# 添加 latest.log 文件处理器（DEBUG 级别）
+logger.add(
+    "./logs/latest.log",
+    level="DEBUG",
+    encoding="utf-8",
+)
 
-# 将处理器添加到日志记录器
-logger.addHandler(file_handler)
-logger.addHandler(latest_log_file_handler)
-logger.addHandler(stream_handler)
+# 添加控制台处理器（INFO 级别）
+logger.add(
+    sys.stderr,
+    level="INFO",
+    format="<level>{message}</level>",  # 简洁的控制台格式
+)
 
-with open(LOG_FILE, 'w', encoding='utf-8') as f:
+with open(LOG_FILE, "w", encoding="utf-8") as f:
     f.write(f"""{"-"*50}
     小树壁纸日志信息
     小树壁纸 | 当前版本: {VER} 内部版本: {INSIDE_VER} 构建版本: {BUILD_VER}
@@ -977,7 +1025,7 @@ with open("./logs/latest.log", 'w', encoding='utf-8') as f:
     日志文件: ./logs/latest.log
 {"-"*50}
 """)
-logging.info("日志初始化成功")
+logger.info("日志初始化成功")
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 主窗口
@@ -987,18 +1035,18 @@ logging.info("日志初始化成功")
 root = maliang.Tk(title=f"小树壁纸{VER}_{BUILD_VER}")
 root.center()
 
-logging.info("初始化窗口成功")
+logger.info("初始化窗口成功")
 
 
 
 # 加载字体
 if toolbox.load_font("./assets/fonts/LXGWWenKai-Regular.ttf"):
     configs.Font.family = "霞鹜文楷"
-    logging.info("文本字体1加载成功")
+    logger.info("文本字体1加载成功")
 if toolbox.load_font("./assets/fonts/MiSans-Regular.ttf"):
-    logging.info("文本字体2加载成功")
+    logger.info("文本字体2加载成功")
 if toolbox.load_font("./assets/fonts/SEGOEICONS.TTF"):
-    logging.info("图标字体加载成功")
+    logger.info("图标字体加载成功")
 
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 # 模块: 脚本引擎
@@ -1043,7 +1091,7 @@ class WallpaperScriptEngine:
         """日志接口: log("message")"""
         if len(args) != 1:
             raise ValueError("log 需要1个参数")
-        logging.info(f"[脚本日志] {args[0]}")
+        logger.info(f"[脚本日志] {args[0]}")
 
     def execute(self, script):
         """执行脚本代码"""
@@ -1123,21 +1171,20 @@ class WallpaperScriptEngine:
                         self._execute_line(stmt)
             return
 
-### ✨ 脚本管理器
 def script_thread(script):
-    logging.info(f"[新脚本线程 | ID{threading.get_ident()}] 开始执行脚本")
+    logger.info(f"[新脚本线程 | ID{threading.get_ident()}] 开始执行脚本")
     api = ScriptAPI()
     engine = WallpaperScriptEngine(api)
     try:
         engine.execute(script)
-        logging.info(f"[脚本线程 | ID{threading.get_ident()}] 脚本执行完成")
+        logger.info(f"[脚本线程 | ID{threading.get_ident()}] 脚本执行完成")
         notification.notify(
             title="脚本执行完成",
             message="壁纸脚本已成功执行",
             app_name="小树壁纸"
         )
     except Exception as e:
-        logging.error(f"[脚本线程 | ID{threading.get_ident()}] 脚本执行错误: {e}")
+        logger.error(f"[脚本线程 | ID{threading.get_ident()}] 脚本执行错误: {e}")
 
         notification.notify(
             title="脚本执行错误",
@@ -1270,50 +1317,50 @@ command_line_debug_tool_thread.start()
 # 功能: 读取/初始化配置文件
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-logging.info("配置文件路径："+os.path.abspath(CONFIG_PATH))
+logger.info("配置文件路径："+os.path.abspath(CONFIG_PATH))
 if os.path.exists(CONFIG_PATH) is not True:
-    logging.warning("未检测到配置文件, 尝试创建配置文件...")
+    logger.warning("未检测到配置文件, 尝试创建配置文件...")
     if os.path.exists(os.path.dirname(CONFIG_PATH)) is not True:
-        logging.info("未检测到配置文件目录, 尝试创建配置文件目录...")
+        logger.info("未检测到配置文件目录, 尝试创建配置文件目录...")
         try:
             os.makedirs(os.path.dirname(CONFIG_PATH))
-            logging.info("创建配置文件目录成功")
+            logger.info("创建配置文件目录成功")
         except Exception as e:
-            logging.error(f"创建配置文件目录失败, 错误: {e}")
+            logger.error(f"创建配置文件目录失败, 错误: {e}")
 
             maliang.dialogs.TkMessage(icon="error",title="严重错误：创建配置文件目录失败",message="详细错误信息请查看日志",detail="你可以向作者反馈此问题")
             webbrowser.open("https://github.com/shu-shu-1/Xiaoshu-Wallpaper/issues/new?labels=bug")
             os._exit(0)
     with open(CONFIG_PATH,"w+") as f:
-        logging.info("创建空配置文件成功")
+        logger.info("创建空配置文件成功")
         f.read()
         f.close()
     cog = ltwpAPI.config.ConfigManager(CONFIG_PATH)
     cog.reset_config()
-    logging.info("已载入默认配置")
+    logger.info("已载入默认配置")
 else:
     try:
         cog = ltwpAPI.config.ConfigManager(CONFIG_PATH)
     except Exception as e:
-        logging.error(f"载入配置文件失败, 错误: {e}")
+        logger.error(f"载入配置文件失败, 错误: {e}")
 
         maliang.dialogs.TkMessage(icon="error",title="严重错误：载入配置文件失败",message="详细错误信息请查看日志",detail="你可以向作者反馈此问题(前提是你未手动修改配置文件)或删除配置文件")
         webbrowser.open("https://github.com/shu-shu-1/Xiaoshu-Wallpaper/issues/new?labels=bug")
         os._exit(0)
-    logging.info("已载入配置文件")
+    logger.info("已载入配置文件")
     try:
         cog.get_value("info.version")
     except KeyError:
-        logging.warning("配置文件版本过低或为空, 重置配置文件...")
+        logger.warning("配置文件版本过低或为空, 重置配置文件...")
         cog.reset_config()
     if compare_versions(cog.get_value("info.version"), "2.0.0") > 0:
-        logging.warning("配置文件版本过高, 请确认是否使用过高版本程序")
+        logger.warning("配置文件版本过高, 请确认是否使用过高版本程序")
         maliang.dialogs.TkMessage(icon="warning",title="配置文件版本过高",message="配置文件版本过高，请确认是否使用过高版本程序",detail="配置文件版本过高，可能导致程序运行异常。建议使用最新版本程序或重新创建配置文件。")
 
 if cog.get_value("data.download_path") == "":
-    logging.warning("下载路径未设置, 尝试设置默认下载路径...")
-    # TODO : 更改默认下载路径
-    cog.set_value("data.download_path", get_my_pictures_path())
+    logger.warning("下载路径未设置, 尝试设置默认下载路径...")
+    cog.set_value("data.download_path", PATH_USER_PICTURES / "下载")
+
 
 
 
@@ -1441,11 +1488,11 @@ def fetch_latest_release(
         ty: 更新渠道类型
         api_endpoints: 可自定义的API端点列表，按顺序尝试直至成功
     """
-    logging.info(f"开始检查更新，渠道类型：{ty}")
+    logger.info(f"开始检查更新，渠道类型：{ty}")
 
     # 测试渠道特殊处理
     if ty == "Test":
-        logging.info("检测到测试更新配置")
+        logger.info("检测到测试更新配置")
         return {
             "status": "test_update",
             "version": "V0.1.0 Next",
@@ -1458,19 +1505,19 @@ def fetch_latest_release(
     update_web_json = None
     for idx, api in enumerate(api_endpoints, 1):
         try:
-            logging.info(f"尝试第{idx}个API端点: {api}")
+            logger.info(f"尝试第{idx}个API端点: {api}")
             response = requests.get(api, timeout=10)
             response.raise_for_status()
             update_web_json = json.loads(response.text)
             break  # 成功获取后跳出循环
         except Exception as e:
-            logging.warning(f"API端点{idx}请求失败: {str(e)}")
+            logger.warning(f"API端点{idx}请求失败: {str(e)}")
             continue
 
     # 所有API请求失败处理
     if not update_web_json:
         error_msg = f"所有{len(api_endpoints)}个API端点请求均失败"
-        logging.error(error_msg)
+        logger.error(error_msg)
         return {
             "status": "error",
             "error_message": error_msg
@@ -1485,7 +1532,7 @@ def fetch_latest_release(
         web_file_format = channel_data["file_format"]
 
         if compare_versions(web_ver, VER) == 1:
-            logging.info(f"发现新版本 {web_ver}")
+            logger.info(f"发现新版本 {web_ver}")
             return {
                 "status": "update_available",
                 "version": web_ver,
@@ -1494,12 +1541,12 @@ def fetch_latest_release(
                 "file_format": web_file_format
             }
         else:
-            logging.info(f"当前已是最新版本 ({web_ver})")
+            logger.info(f"当前已是最新版本 ({web_ver})")
             return {"status": "no_update"}
 
     except KeyError as e:
         error_msg = f"JSON字段解析失败: {str(e)}"
-        logging.error(error_msg)
+        logger.error(error_msg)
 
         return {
             "status": "error",
@@ -1507,7 +1554,7 @@ def fetch_latest_release(
         }
     except Exception as e:
         error_msg = f"未知错误: {str(e)}"
-        logging.error(error_msg)
+        logger.error(error_msg)
 
         return {
             "status": "error",
@@ -1540,8 +1587,7 @@ def download_file(url, save_path="./temp", custom_filename=None, timeout=30, max
     返回:
         str: 保存的文件的完整路径，如果下载失败则返回None
     """
-    
-    # 设置默认请求头
+    global occupied_file_list
     default_headers = {
         'User-Agent': UA,
         'Accept': '*/*',
@@ -1549,260 +1595,211 @@ def download_file(url, save_path="./temp", custom_filename=None, timeout=30, max
     }
     if headers:
         default_headers.update(headers)
+    header_list = [f"{k}: {v}" for k, v in default_headers.items()]
 
-    
     # 处理手动指定的文件名
     filename = None
     extension = None
     custom_extension = None
-    
     if custom_filename:
         filename = custom_filename
-        # 检查是否包含扩展名
         if '.' in custom_filename and not custom_filename.endswith('.'):
             name_parts = custom_filename.rsplit('.', 1)
             if len(name_parts) > 1 and name_parts[1].strip():
                 custom_extension = '.' + name_parts[1].strip()
-    
+
+    # 路径处理
+    save_path = Path(save_path)
+    if save_path.is_dir():
+        save_dir = save_path
+    else:
+        save_dir = save_path.parent if save_path.parent != Path('.') else Path.cwd()
+
     # 重试逻辑
+    c = pycurl.Curl()
     for attempt in range(max_retries):
         temp_path = None
         try:
-            # 初始化pycurl
-            c = pycurl.Curl()
+            # 生成唯一临时文件名
+            temp_path = save_dir / f"temp_{uuid.uuid4().hex}"
             
-            # 1. 首先获取头部信息
+            # 确保临时缓存不被清理
+            occupied_file_list.append(temp_path)
+            
             header_buffer = io.BytesIO()
-            c.setopt(pycurl.URL, url)
-            c.setopt(pycurl.NOBODY, 1)  # HEAD请求
-            c.setopt(pycurl.HEADERFUNCTION, header_buffer.write)
-            c.setopt(pycurl.CONNECTTIMEOUT, timeout)
-            c.setopt(pycurl.TIMEOUT, timeout)
-            c.setopt(pycurl.FOLLOWLOCATION, 1)
-            c.setopt(pycurl.MAXREDIRS, 5)
-            
-            # 设置请求头
-            header_list = [f"{k}: {v}" for k, v in default_headers.items()]
-            c.setopt(pycurl.HTTPHEADER, header_list)
-            
-            c.perform()
-            http_code = c.getinfo(pycurl.HTTP_CODE)
-            
-            if http_code != 200:
-                raise pycurl.error(f"HTTP状态码: {http_code}")
-            
-            # 解析头部信息
-            headers_text = header_buffer.getvalue().decode('utf-8', errors='ignore')
             headers_dict = {}
+
+            # 只用一次GET请求
+            with open(temp_path, 'wb') as f:
+                c.setopt(pycurl.URL, url)
+                c.setopt(pycurl.CONNECTTIMEOUT, timeout)
+                c.setopt(pycurl.TIMEOUT, timeout)
+                c.setopt(pycurl.FOLLOWLOCATION, 1)
+                c.setopt(pycurl.MAXREDIRS, 5)
+                c.setopt(pycurl.HTTPHEADER, header_list)
+                c.setopt(pycurl.NOPROGRESS, 1)  # 不显示进度
+                c.setopt(pycurl.HEADERFUNCTION, header_buffer.write)
+                c.setopt(pycurl.WRITEDATA, f)
+                c.perform()
+
+            http_code = c.getinfo(pycurl.HTTP_CODE)
+            if http_code != 200:
+                raise pycurl.error(f"下载失败，HTTP状态码: {http_code}")
+
+            # 解析header
+            headers_text = header_buffer.getvalue().decode('utf-8', errors='ignore')
             for line in headers_text.split('\n'):
                 if ':' in line:
                     key, value = line.split(':', 1)
                     headers_dict[key.strip()] = value.strip()
-            
-            # 如果没有手动指定文件名，尝试自动获取
+
+            # 文件名推断
             if not filename:
-                # 1. 从Content-Disposition获取文件名
+                # Content-Disposition
                 if 'Content-Disposition' in headers_dict:
                     content_disposition = headers_dict['Content-Disposition']
-                    filename_match = re.search(r'filename=["\'](.*)["\']', content_disposition)
+                    filename_match = re.search(r'filename=["\']?([^"\';]+)', content_disposition)
                     if filename_match:
-                        filename = unquote(filename_match.group(1))
-                    else:
-                        filename_match = re.search(r'filename=([^;]+)', content_disposition)
-                        if filename_match:
-                            filename = unquote(filename_match.group(1).strip())
-                
-                # 2. 从URL路径获取文件名
+                        filename = unquote(filename_match.group(1).strip())
+                # URL路径
                 if not filename:
                     parsed_url = urlparse(url)
                     if parsed_url.path:
                         filename = unquote(os.path.basename(parsed_url.path))
-                        # 检查是否是有效的文件名
                         if not filename or filename.endswith('/') or '.' not in filename:
                             filename = None
-            
-            # 如果没有自定义扩展名，尝试从Content-Type获取
+            # 没有文件名则用hash
+            if not filename:
+                filename = hashlib.md5(url.encode()).hexdigest()
+
+            # 扩展名推断
             content_type = headers_dict.get('Content-Type', '').lower().split(';')[0].strip()
             if not custom_extension and content_type and content_type != 'application/octet-stream':
                 guessed_extension = mimetypes.guess_extension(content_type)
                 if guessed_extension:
                     extension = guessed_extension
-            
-            # 如果没有获取到文件名，使用URL的MD5哈希值作为文件名
-            if not filename:
-                hash_object = hashlib.md5(url.encode())
-                filename = hash_object.hexdigest()
-            
-            # 确定临时保存路径用于判断文件类型
-            temp_dir = os.path.dirname(os.path.abspath(save_path)) if save_path else os.getcwd()
-            temp_path = os.path.join(temp_dir, f"temp_{filename}")
-            
-            # 2. 下载文件内容
-            logging.info(f"开始下载: {url}")
-            
-            # 重置curl对象
-            c.reset()
-            c.setopt(pycurl.URL, url)
-            c.setopt(pycurl.CONNECTTIMEOUT, timeout)
-            c.setopt(pycurl.TIMEOUT, timeout)
-            c.setopt(pycurl.FOLLOWLOCATION, 1)
-            c.setopt(pycurl.MAXREDIRS, 5)
-            c.setopt(pycurl.HTTPHEADER, header_list)
-            
-            # 设置写入文件和进度回调
-            with open(temp_path, 'wb') as f:
-                c.setopt(pycurl.WRITEDATA, f)
-                
-                # 进度回调函数
-                def progress_callback(download_total, downloaded, upload_total, uploaded):
-                    # if download_total > 0:
-                    #     progress = (downloaded / download_total) * 100
-                    #     logging.info(f"下载进度: {progress:.2f}% ({downloaded} / {download_total})")
-                    pass
-                
-                c.setopt(pycurl.NOPROGRESS, 0)
-                c.setopt(pycurl.PROGRESSFUNCTION, progress_callback)
-                
-                c.perform()
-            
-            http_code = c.getinfo(pycurl.HTTP_CODE)
-            if http_code != 200:
-                raise pycurl.error(f"下载失败，HTTP状态码: {http_code}")
-            
-            # 文件类型检测
+
+            # magic检测
+            mime_type = None
             if not custom_extension:
                 try:
-                    mime_type = magic.magic.Magic(mime=True).from_file(temp_path)
-                    file_type = magic.magic.Magic().from_file(temp_path)
-                    logging.info(f"[方式1]检测到的MIME类型: {mime_type}")
-                    logging.info(f"[方式1]检测到的文件类型: {file_type}")
+                    mime_type = magic.magic.Magic(mime=True).from_file(str(temp_path))
+                    if not extension:
+                        guessed_extension = mimetypes.guess_extension(mime_type)
+                        if guessed_extension:
+                            extension = guessed_extension
                 except Exception as e:
-                    logging.warning(f"使用magic检测文件类型失败: {e}")
+                    logger.warning(f"magic检测失败: {e}")
                     try:
-                        mime_type = filetype.guess_mime(temp_path)
-                        file_type = filetype.guess_extension(temp_path)
-                        logging.info(f"[方式2]检测到的MIME类型: {mime_type}")
-                        logging.info(f"[方式2]检测到的文件类型: {file_type}")
+                        mime_type = filetype.guess_mime(str(temp_path))
+                        if not extension and mime_type:
+                            guessed_extension = mimetypes.guess_extension(mime_type)
+                            if guessed_extension:
+                                extension = guessed_extension
                     except Exception as e:
-                        logging.error(f"使用filetype检测文件格式失败：{e}")
-                        raise "文件格式检测失败"
-                
-                # 根据检测到的MIME类型获取扩展名
-                if not extension:
-                    guessed_extension = mimetypes.guess_extension(mime_type)
-                    if guessed_extension:
-                        extension = guessed_extension
-                
-                # 确保文件名有正确的扩展名
-                if extension:
-                    name_parts = filename.rsplit('.', 1)
-                    if len(name_parts) > 1 and name_parts[1].lower() in mimetypes.types_map.keys():
-                        # 已有合适的扩展名，保持不变
-                        pass
-                    else:
-                        # 添加或替换扩展名
-                        filename = name_parts[0] + extension
-            else:
-                # 使用自定义扩展名
-                logging.info(f"使用自定义扩展名: {custom_extension}")
+                        logger.error(f"filetype检测失败: {e}")
+
+            # 文件名加扩展名
+            if custom_extension:
                 name_parts = filename.rsplit('.', 1)
                 filename = name_parts[0] + custom_extension
-            
-            # 确定最终保存路径
-            if save_path:
-                if os.path.isdir(save_path):
-                    full_path = os.path.join(save_path, filename)
+            elif extension:
+                name_parts = filename.rsplit('.', 1)
+                if len(name_parts) > 1 and ('.' + name_parts[1].lower()) in mimetypes.types_map:
+                    pass  # 已有合适扩展名
                 else:
-                    # 如果提供的是完整路径，使用它
-                    full_path = save_path
+                    filename = name_parts[0] + extension
+
+            # 最终保存路径
+            if save_path.is_dir():
+                full_path = save_path / filename
             else:
-                full_path = filename
-            
+                full_path = save_path
+
             # 确保目录存在
-            os.makedirs(os.path.dirname(os.path.abspath(full_path)), exist_ok=True)
-            
-            # 将临时文件移动到最终位置
-            shutil.move(temp_path, full_path)
-            
-            logging.info(f"文件下载完成: {full_path.replace('\\','/')}")
-            return full_path
-            
+            full_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # 移动临时文件
+            shutil.move(str(temp_path), str(full_path))
+            logger.info(f"文件下载完成: {full_path}")
+            return str(full_path)
+
         except pycurl.error as e:
             errno, errmsg = e.args if len(e.args) == 2 else (None, str(e))
-            logging.error(f"下载尝试 {attempt + 1}/{max_retries} 失败: {errmsg} (errno: {errno})")
+            logger.error(f"下载尝试 {attempt + 1}/{max_retries} 失败: {errmsg} (errno: {errno})")
             if attempt == max_retries - 1:
-                logging.error(f"下载失败，已达到最大重试次数: {url}")
-                # 清理临时文件
-                if temp_path and os.path.exists(temp_path):
-                    os.remove(temp_path)
+                logger.error(f"下载失败，已达到最大重试次数: {url}")
+                if temp_path and temp_path.exists():
+                    temp_path.unlink()
+                    occupied_file_list.remove(temp_path)
                 return None
+            c.reset()
             continue
         except Exception as e:
-            logging.error(f"处理文件时出错: {str(e)}")
-            # 清理临时文件
-            if temp_path and os.path.exists(temp_path):
-                os.remove(temp_path)
+            logger.error(f"处理文件时出错: {str(e)}")
+            if temp_path and temp_path.exists():
+                temp_path.unlink()
+                occupied_file_list.remove(temp_path)
             return None
         finally:
-            if 'c' in locals():
-                c.close()
-            
+            pass
+    c.close()
     return None
 
 def ssp_bing_loading():
     global bing_data, bing_img_temp, bing_img_view
     try:
-        logging.info("开始加载快捷面板Bing壁纸")
+        logger.info("开始加载快捷面板Bing壁纸")
         bing_loading_text.set("加载中...1/3")
         bing_data=get_bing_image()
-        logging.info("Bing壁纸服务器数据获取成功")
+        logger.info("Bing壁纸服务器数据获取成功")
         bing_loading_text.set("加载中...2/3")
         bing_img_temp=download_file(bing_data[0]["url"], custom_filename="bing")
         occupied_file_list.append(bing_img_temp)
-        logging.info("Bing壁纸图片下载成功")
+        logger.info("Bing壁纸图片下载成功")
         bing_loading_text.set("加载中...3/3")
         bing_img_view=maliang.Image(canvas_ssp, (20,100), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(15).round_corners(ltwpAPI.image.ImageScaler(Image.open(bing_img_temp)).scale_by_size(new_height=200))))
-        logging.info("Bing壁纸图片加载成功")
+        logger.info("Bing壁纸图片加载成功")
         sbb.forget(False)
         vb.forget(False)
         bing_loading_text.forget()
     except Exception as e:
-        logging.error(f"加载Bing壁纸失败：{e}")
+        logger.error(f"加载Bing壁纸失败：{e}")
 
         bing_loading_text.set("加载出现错误，请查看日志了解详情。")
     # spotlight_data=get_spotlight_image()
 def ssp_spotlight_loading():
     global spotlight_data, spotlight_img_temp1, spotlight_img_temp2, spotlight_img_temp3, spotlight_img_temp4, spotlight_img_view1, spotlight_img_view2, spotlight_img_view3, spotlight_img_view4
     try:
-        logging.info("开始加载快捷面板Spotlight壁纸")
+        logger.info("开始加载快捷面板Spotlight壁纸")
         spotlight_loading_text.set("加载中...1/5")
         spotlight_data=get_spotlight_image()
-        logging.info("Spotlight壁纸服务器数据获取成功")
+        logger.info("Spotlight壁纸服务器数据获取成功")
         spotlight_loading_text.set("加载中...2/5")
         spotlight_img_temp1=download_file(spotlight_data[0]["url"], custom_filename="spotlight1")
         occupied_file_list.append(spotlight_img_temp1)
         spotlight_img_view1=maliang.Image(canvas_ssp, (25,360), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp1)).scale_by_size(new_height=110))))
-        logging.info("Spotlight壁纸图片1下载成功")
+        logger.info("Spotlight壁纸图片1下载成功")
         spotlight_loading_text.set("加载中...3/5")
         spotlight_img_temp2=download_file(spotlight_data[1]["url"], custom_filename="spotlight2")
         occupied_file_list.append(spotlight_img_temp2)
         spotlight_img_view2=maliang.Image(canvas_ssp, (225,360), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp2)).scale_by_size(new_height=110))))
-        logging.info("Spotlight壁纸图片2下载成功")
+        logger.info("Spotlight壁纸图片2下载成功")
         spotlight_loading_text.set("加载中...4/5")
         spotlight_img_temp3=download_file(spotlight_data[2]["url"], custom_filename="spotlight3")
         occupied_file_list.append(spotlight_img_temp3)
         spotlight_img_view3=maliang.Image(canvas_ssp, (25,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp3)).scale_by_size(new_height=110))))
-        logging.info("Spotlight壁纸图片3下载成功")
+        logger.info("Spotlight壁纸图片3下载成功")
         spotlight_loading_text.set("加载中...5/5")
         spotlight_img_temp4=download_file(spotlight_data[3]["url"], custom_filename="spotlight4")
         occupied_file_list.append(spotlight_img_temp4)
         spotlight_img_view4=maliang.Image(canvas_ssp, (225,480), image=maliang.PhotoImage(ltwpAPI.image.RoundedImage(10).round_corners(ltwpAPI.image.ImageScaler(Image.open(spotlight_img_temp4)).scale_by_size(new_height=110))))
-        logging.info("Spotlight壁纸图片4下载成功")
-        logging.info("Spotlight壁纸图片加载成功")
+        logger.info("Spotlight壁纸图片4下载成功")
+        logger.info("Spotlight壁纸图片加载成功")
         svb.forget(False)
         spotlight_loading_text.forget()
     except Exception as e:
-        logging.error(f"加载Spotlight壁纸失败：{e}")
+        logger.error(f"加载Spotlight壁纸失败：{e}")
 
         spotlight_loading_text.set("加载出现错误，请查看日志了解详情。")
 def show_root():
@@ -2440,7 +2437,7 @@ def create_ui_element(parent, element_config):
                     )
 
     except Exception as e:
-        logging.error(f"UI元素创建失败: {str(e)}")
+        logger.error(f"UI元素创建失败: {str(e)}")
 
         traceback.print_exc()
 
@@ -2470,7 +2467,7 @@ def process_image(image_path, target_size=None, crop_area=None):
         )))
 
     except Exception as e:
-        logging.error(f"图片处理失败: {str(e)}")
+        logger.error(f"图片处理失败: {str(e)}")
 
         return maliang.PhotoImage(Image.new('RGB', (100, 100), color='gray'))
 
@@ -2538,7 +2535,7 @@ if platform.system() == "Windows":
 
 
             for i, m in enumerate(monitors):
-                logging.info(f"检查到显示器: 显示器{i}: {m['width']}x{m['height']} @ ({m['left']},{m['top']})")
+                logger.info(f"检查到显示器: 显示器{i}: {m['width']}x{m['height']} @ ({m['left']},{m['top']})")
 
             return monitors
 
@@ -2614,15 +2611,15 @@ def show_debug_panel():
     maliang.Text(canvas_debug, (50, 100), text=f"版本[{VER}] 内部版本[{INSIDE_VER}] 构建信息[{BUILD_VER}]", fontsize=20, anchor="nw")
     maliang.Text(canvas_debug, (50, 140), text="动态壁纸", fontsize=40, anchor="nw")
     def choose_video():
-        logging.info("[测试]开启动态壁纸")
+        logger.info("[测试]开启动态壁纸")
         play_video_as_wallpaper(filedialog.askopenfilename(title="选择视频文件", filetypes=[("视频文件", "*.mp4;*.mkv;*.avi")]))
     def close_video():
-        logging.info("[测试]关闭动态壁纸")
+        logger.info("[测试]关闭动态壁纸")
         for proc in psutil.process_iter(['pid', 'name']):
             if proc.info['name'] == 'mpv.exe':  
-                logging.info(f"查找到Mpv的PID: {proc.info['pid']}")
+                logger.info(f"查找到Mpv的PID: {proc.info['pid']}")
                 os.system(f"taskkill /F /PID {proc.info['pid']}")
-                logging.info(f"已关闭Mpv(pid: {proc.info['pid']})")
+                logger.info(f"已关闭Mpv(pid: {proc.info['pid']})")
     maliang.Button(canvas_debug, (50, 200), text="选择视频", command=choose_video)
     maliang.Button(canvas_debug, (200, 200), text="关闭", command=close_video)
     debug_root.mainloop()
@@ -2826,7 +2823,7 @@ def change_setting_page(page):
 
                         def change_font_dialog(font_input):
                             # print("--------------\n"+font_input+"\n--------------")
-                            logging.info(f"用户选择的字体: {font_input}")
+                            logger.info(f"用户选择的字体: {font_input}")
                             maliang.configs.Font.family = extract_content(font_input)
                         maliang.dialogs.TkFontChooser(master=root,command=change_font_dialog)
                         root.update_idletasks()
@@ -2861,16 +2858,15 @@ def change_setting_page(page):
             def change_download_path():
                 new_path = filedialog.askdirectory(initialdir=cog.get_value("data.download_path"),title="选择壁纸下载位置",parent=root,mustexist=True)
                 if new_path:
-                    logging.info(f"用户选择的新下载位置: {new_path}")
+                    logger.info(f"用户选择的新下载位置: {new_path}")
                     cog.set_value("data.download_path", new_path.replace("/","\\"))
 
                     # save_cog()
                     path_show.set(f"当前壁纸下载位置：{cog.get_value("data.download_path")}")
             def change_download_path_default():
-                # TODO : 修改默认下载路径
-                Download_Path = get_my_pictures_path()
+                Download_Path = PATH_DEFAULT_DOWNLOADS
                 cog.set_value("data.download_path" , Download_Path)
-                logging.info(f"恢复默认下载位置: {Download_Path}")
+                logger.info(f"恢复默认下载位置: {Download_Path}")
                 path_show.set(f"当前壁纸下载位置：{Download_Path}")
                 # save_cog()
             maliang.Button(canvas_setting_pages, (0, 230), text="更改下载位置", command=change_download_path, size=(1000,50))
@@ -2881,6 +2877,19 @@ def change_setting_page(page):
             canvas_setting_pages = maliang.Canvas(canvas_setting, auto_zoom=True, keep_ratio="min", free_anchor=True)
             canvas_setting_pages.place(x=170, y=140, width=1200, height=500, anchor="nw")
             maliang.Text(canvas_setting_pages, (10, 10), text="窗口", fontsize=30, anchor="nw")
+            def change_window_setting(index):
+                match index:
+                    case 0:
+                        ...
+                    case 1:
+                        ...
+                    case _:
+                        logger.error(f"未知的窗口设置选项, index: {index}")
+                        maliang.dialogs.TkMessage(icon="error", title="小树壁纸-错误", message="未知的窗口设置选项，请联系开发者！",detail="该问题不应出现，作者可能也会觉得很奇怪")
+                        clean_page()
+                        main()
+            windows_setting = maliang.SegmentedButton(canvas_setting_pages, (10, 50), text=["主窗口", "快捷面板"], command=change_window_setting, default=0)
+            
             maliang.Text(canvas_setting_pages, (10, 50), text="窗口大小", fontsize=20, anchor="nw")
             maliang.Text(canvas_setting_pages, (10, 80), text=f"当前窗口大小：{root.winfo_width()}x{root.winfo_height()}", fontsize=20, anchor="nw")
             # maliang.Text(canvas_setting_pages, (10, 110), text="窗口模式", fontsize=20, anchor="nw")
@@ -2890,10 +2899,10 @@ def change_setting_page(page):
 
             #     if window_mode:
             #         root.attributes("-fullscreen", True)
-            #         logging.info("切换到全屏模式")
+            #         logger.info("切换到全屏模式")
             #     else:
             #         root.attributes("-fullscreen", False)
-            #         logging.info("切换到窗口模式")
+            #         logger.info("切换到窗口模式")
 
             # window_mode_choose=maliang.SegmentedButton(canvas_setting_pages, (20, 140), text=["全屏", "窗口"], layout="horizontal",command=change_window_mode,default=1)
             # window_mode_choose.set(window_mode)
@@ -2937,9 +2946,9 @@ def change_setting_page(page):
 
             alpha_slider=maliang.Slider(canvas_setting_pages, (10, 180), (350, 30), command=update_window_alpha, default=root.alpha())
             maliang.Text(canvas_setting_pages, (10, 220), text="置顶", fontsize=20, anchor="nw")
-            maliang.Switch(canvas_setting_pages, (10, 250), command=lambda s: (root.attributes("-topmost", s), logging.info(f"置顶状态: {s}")), default=root.attributes("-topmost"))
+            maliang.Switch(canvas_setting_pages, (10, 250), command=lambda s: (root.attributes("-topmost", s), logger.info(f"置顶状态: {s}")), default=root.attributes("-topmost"))
             maliang.Text(canvas_setting_pages, (100, 220), text="隐藏标题栏", fontsize=20, anchor="nw")
-            maliang.Switch(canvas_setting_pages, (100, 250), command=lambda s: (root.overrideredirect(s), logging.info(f"隐藏标题栏状态: {s}")), default=root.overrideredirect())
+            maliang.Switch(canvas_setting_pages, (100, 250), command=lambda s: (root.overrideredirect(s), logger.info(f"隐藏标题栏状态: {s}")), default=root.overrideredirect())
         case 2:
             canvas_setting_pages.delete("all")
             canvas_setting_pages.destroy()
@@ -2956,7 +2965,7 @@ def change_setting_page(page):
             def change_bg():
                 new_bg = filedialog.askopenfilename(initialdir=cog.get_value("display.window_background_image_path"),title="选择壁纸",parent=root,filetypes=[("图片文件","*.jpg;*.png;*.jpeg")])
                 if new_bg:
-                    logging.info(f"用户选择的壁纸: {new_bg}")
+                    logger.info(f"用户选择的壁纸: {new_bg}")
 
                     cog.set_value("display.window_background_image_path",new_bg)
 
@@ -2976,15 +2985,15 @@ def change_setting_page(page):
                     case 0:
                         cog.set_value("home_page.style", "default")
                         # cog["home_page_style"] = "default"
-                        logging.info("用户选择的主页布局: 默认")
+                        logger.info("用户选择的主页布局: 默认")
                     case 1:
                         cog.set_value("home_page.style", "next")
                         # cog["home_page_style"] = "next"
-                        logging.info("用户选择的主页布局: Next")
+                        logger.info("用户选择的主页布局: Next")
                     case 2:
                         cog.set_value("home_page.style", "test")
                         # cog["home_page_style"] = "new"
-                        logging.info("用户选择的主页布局: 新-测试")
+                        logger.info("用户选择的主页布局: 新-测试")
 
                 # save_cog()
             df=maliang.SegmentedButton(canvas_setting_pages, (20, 240), text=["默认", "Next", "新-测试"], layout="horizontal",command=change_home_style)
@@ -3003,20 +3012,20 @@ def change_setting_page(page):
             canvas_setting_pages.place(x=170, y=140, width=1200, height=500, anchor="nw")
             maliang.Text(canvas_setting_pages, (10, 10), text="更新", fontsize=30, anchor="nw", weight="bold")
             maliang.Text(canvas_setting_pages, (10, 300), text="启动时自动检查更新：", fontsize=20, anchor="nw")
-            maliang.Switch(canvas_setting_pages, (210, 300), command=lambda s: (cog.set_value("update.enabled", s), logging.info(f"启动时自动检查更新: {s}")), default=cog.get_value("update.enabled"))
+            maliang.Switch(canvas_setting_pages, (210, 300), command=lambda s: (cog.set_value("update.enabled", s), logger.info(f"启动时自动检查更新: {s}")), default=cog.get_value("update.enabled"))
             debug_mode_button = maliang.Button(canvas_setting_pages, (430, 340), text="调试面板",command=lambda: show_debug_panel())
             maliang.Text(canvas_setting_pages, (10, 350), text="更新通道", fontsize=20, anchor="nw")
             def change_update_channel(channel):
                 if channel == 0:
                     dev_warning.forget()
                     cog.set_value("update.channel", "Stable")
-                    logging.info("用户选择的更新通道: Stable")
+                    logger.info("用户选择的更新通道: Stable")
                     debug_mode_button.forget()
                 else:
                     dev_warning.forget(False)
                     # maliang.dialogs.TkMessage(icon="warning", title="警告", message="开发版功能可能不稳定或存在问题，请谨慎使用！", detail="请不要在生产环境中使用开发版功能！")
                     cog.set_value("update.channel", "Dev")
-                    logging.info("用户选择的更新通道: Dev")
+                    logger.info("用户选择的更新通道: Dev")
                     debug_mode_button.forget(False)
             dev_warning=maliang.Text(canvas_setting_pages, (10, 550), text="开发版功能可能不稳定或存在问题，请谨慎使用！", fontsize=17, anchor="nw")
             choose_update_channel=maliang.ComboBox(canvas_setting_pages, (110, 340),(300,40) ,text=["Stable(稳定版，推荐)", "Dev(开发版)"], command=lambda s: change_update_channel(s))
@@ -3038,20 +3047,20 @@ def change_setting_page(page):
                         update_check_result = result
                         update_check_spinner.forget()
                         if result["status"] == "update_available":
-                            logging.info(f"发现新版本: {result['version']}")
+                            logger.info(f"发现新版本: {result['version']}")
                             is_have_update=True
 
                         elif result["status"] == "test_update":
-                            logging.info("测试更新被触发")
+                            logger.info("测试更新被触发")
                             is_have_update=True
                         elif result["status"] == "error":
-                            logging.error(f"更新检查失败：{result['error_message']}")
+                            logger.error(f"更新检查失败：{result['error_message']}")
                             maliang.TkMessage(icon="error",title="更新",message="更新检查失败",detail="详细错误信息请查看日志")
                         elif result["status"] == "no_update":
                             is_have_update=True
                             maliang.Text(canvas_setting_pages, (50, 150), text="当前已是最新版本")
                         else:
-                            logging.error(f"未知的更新状态：{result}")
+                            logger.error(f"未知的更新状态：{result}")
 
 
 
@@ -3059,7 +3068,7 @@ def change_setting_page(page):
                     checker.async_check(callback=handle_update_result)
 
                 except Exception as e:
-                    logging.error(f"更新检查失败：{e}")
+                    logger.error(f"更新检查失败：{e}")
 
                     maliang.dialogs.TkMessage(icon="error",title="更新",message="更新检查失败",detail="未知错误\n详细错误信息请查看日志")
 
@@ -3100,40 +3109,40 @@ def clean_folder(folder_path, exclude_list=[]):
     folder_path (str): 要清空的文件夹路径
     exclude_list (list): 要排除的文件或文件夹名称列表
     """
-    logging.info(f"准备清空文件夹: {folder_path}".replace("\\","/"))
-    logging.info(f"排除列表: {exclude_list}".replace("\\","/"))
+    logger.info(f"准备清空文件夹: {folder_path}".replace("\\","/"))
+    logger.info(f"排除列表: {exclude_list}".replace("\\","/"))
 
     try:
         for filename in os.listdir(folder_path):
             if filename in exclude_list:
-                logging.info(f"跳过排除的文件或文件夹: {filename}".replace("\\","/"))
+                logger.info(f"跳过排除的文件或文件夹: {filename}".replace("\\","/"))
                 continue  # 跳过排除的文件或文件夹
             file_path = os.path.join(folder_path, filename)
             try:
                 if os.path.isfile(file_path) or os.path.islink(file_path):
-                    logging.info(f"删除文件或链接: {file_path}".replace("\\","/"))
+                    logger.info(f"删除文件或链接: {file_path}".replace("\\","/"))
                     os.unlink(file_path)
                 elif os.path.isdir(file_path):
-                    logging.info(f"删除子文件夹: {file_path}".replace("\\","/"))
+                    logger.info(f"删除子文件夹: {file_path}".replace("\\","/"))
                     shutil.rmtree(file_path)
             except Exception as e:
-                logging.warning(f"无法删除 {file_path}。原因: {e}".replace("\\","/"))
-        logging.info(f"文件夹 {folder_path} 清理完成")
+                logger.warning(f"无法删除 {file_path}。原因: {e}".replace("\\","/"))
+        logger.info(f"文件夹 {folder_path} 清理完成")
     except Exception as e:
-        logging.warning(f"无法清理文件夹 {folder_path}。原因: {e}".replace("\\","/"))
+        logger.warning(f"无法清理文件夹 {folder_path}。原因: {e}".replace("\\","/"))
 
 def return_choice(result):
     global true_del
-    logging.info(f"用户选择: {result}")
+    logger.info(f"用户选择: {result}")
     if result == "yes":
         true_del = True
-        logging.info("用户确认清理文件夹")
+        logger.info("用户确认清理文件夹")
     else:
         true_del = False
-        logging.info("用户取消清理文件夹")
+        logger.info("用户取消清理文件夹")
 
 def del_temp_folder():
-    logging.info("请求用户确认清理缓存文件夹")
+    logger.info("请求用户确认清理缓存文件夹")
     maliang.dialogs.TkMessage(
         icon="question", title="警告",
         message="你确定要清理 缓存 文件夹吗？",
@@ -3141,19 +3150,19 @@ def del_temp_folder():
         default="no", command=lambda result: return_choice(result)
     )
     if true_del:
-        logging.info("开始清理缓存文件夹")
+        logger.info("开始清理缓存文件夹")
         del_temp.disable()
         clean_folder("temp", exclude_list=[os.path.basename(home_page_assets_path)]+occupied_file_list)
         maliang.dialogs.TkMessage(icon="info", title="完成", message="缓存清理完成！")
         del_temp.disable(False)
 
     else:
-        logging.info("清理缓存文件夹操作已取消")
+        logger.info("清理缓存文件夹操作已取消")
 
     data_size.set(f"缓存文件：{get_folder_size("temp"):.2f}MB | 已保存的日志数量：{get_file_count('logs')}")
 
 def del_log_folder():
-    logging.info("请求用户确认清理日志文件夹")
+    logger.info("请求用户确认清理日志文件夹")
     maliang.dialogs.TkMessage(
         icon="warning", title="警告",
         message="你确定要清理 日志 文件夹吗？\n你需要知道你正在做什么! \n日志文件对于查找错误非常重要",
@@ -3161,14 +3170,14 @@ def del_log_folder():
         default="no", command=lambda result: return_choice(result)
     )
     if true_del:
-        logging.info("开始清理日志文件夹")
+        logger.info("开始清理日志文件夹")
         del_log.disable()
         clean_folder("logs", exclude_list=[os.path.basename(LOG_FILE)])
         maliang.dialogs.TkMessage(icon="info", title="完成", message="日志清理完成！")
 
         del_log.disable(False)
     else:
-        logging.info("清理日志文件夹操作已取消")
+        logger.info("清理日志文件夹操作已取消")
 
     data_size.set(f"缓存文件：{get_folder_size("temp"):.2f}MB | 已保存的日志数量：{get_file_count('logs')}")
 
@@ -3403,7 +3412,7 @@ def download_wallpaper(type_name):
                 if resp.status_code == 200:
                     break
                 elif resp.status_code == 521:
-                    logging.warning(f"第 {attempt + 1} 次尝试下载失败，状态码：{resp.status_code}")
+                    logger.warning(f"第 {attempt + 1} 次尝试下载失败，状态码：{resp.status_code}")
                     time.sleep(1)  # 等待一段时间后重试
                 else:
                     raise Exception(f"下载失败，状态码：{resp.status_code}")
@@ -3424,7 +3433,7 @@ def download_wallpaper(type_name):
             # 确保临时目录存在
             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-            logging.info(f"开始下载 {filename}")
+            logger.info(f"开始下载 {filename}")
             if int(resp.headers.get('content-length', 0)) == 0:  # 未知文件大小
                 total_size = None
                 animation.Animation(2000, animation.smooth, callback=pb1.set,
@@ -3446,14 +3455,14 @@ def download_wallpaper(type_name):
 
                         root.update_idletasks()  # 刷新界面
 
-            logging.info("下载完成！")
+            logger.info("下载完成！")
             wallpaper_path=change_file_extension(filename,determine_image_format(filename))
 
             canvas_download.place_forget()
             wallpaper_detail()
 
         except Exception as e:
-            logging.error(f"下载失败: {e}")
+            logger.error(f"下载失败: {e}")
 
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
             canvas_download.place_forget()
@@ -3736,7 +3745,7 @@ def wallpaper_360():
                 total_files = len(json_data['data']['list'])
                 wallpaper_360_path_list=[]
                 # print(list(range(total_files + 1)))
-                logging.info(f"开始下载 {total_files} 个文件")
+                logger.info(f"开始下载 {total_files} 个文件")
                 def update_progress():
                     nonlocal completed_files
                     # 增加已完成文件数量
@@ -3744,7 +3753,7 @@ def wallpaper_360():
 
                     # 计算总进度
                     progress = completed_files / total_files
-                    logging.info(f"已完成 {completed_files} / {total_files}，进度 {progress:.2%}")
+                    logger.info(f"已完成 {completed_files} / {total_files}，进度 {progress:.2%}")
                     # print(progress)
                     # 更新进度条
                     pb1.set(progress)
@@ -3801,10 +3810,10 @@ def wallpaper_360():
                                 timeout=3,
                             )
                         def go_back_wallpaper():
-                            logging.info("从360壁纸返回壁纸选择页面")
+                            logger.info("从360壁纸返回壁纸选择页面")
 
                             if cog.get_value("data.clear_cache_when_360_back"):
-                                logging.info("需要强制清理缓存")
+                                logger.info("需要强制清理缓存")
                                 clean_folder("./temp", [os.path.basename(home_page_assets_path)]+occupied_file_list)
                             back_wallpaper_detail.destroy()
                             set_w_bing_icon.destroy()
@@ -3865,7 +3874,7 @@ def wallpaper_360():
                                 if resp.status_code == 200:
                                     break
                                 elif resp.status_code == 521:
-                                    logging.warning(f"第 {attempt + 1} 次尝试下载失败，状态码：{resp.status_code}")
+                                    logger.warning(f"第 {attempt + 1} 次尝试下载失败，状态码：{resp.status_code}")
                                     time.sleep(1)  # 等待一段时间后重试
                                 else:
                                     raise Exception(f"下载失败，状态码：{resp.status_code}")
@@ -3884,7 +3893,7 @@ def wallpaper_360():
                             # 确保临时目录存在
                             os.makedirs(os.path.dirname(filename), exist_ok=True)
 
-                            logging.info(f"开始下载 {filename}")
+                            logger.info(f"开始下载 {filename}")
 
                             # total_size = int(resp.headers.get('content-length', 0))
                             downloaded_size = 0
@@ -3898,14 +3907,14 @@ def wallpaper_360():
 
                                         root.update_idletasks()
 
-                            logging.info("下载完成！")
+                            logger.info("下载完成！")
                             update_progress()
                             root.update_idletasks()  # 刷新界面
                             # canvas_download.place_forget()
                             # wallpaper_detail()
 
                     except Exception as e:
-                        logging.error(f"下载失败: {e}")
+                        logger.error(f"下载失败: {e}")
 
                         maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
                         # canvas_download.place_forget()
@@ -3937,7 +3946,7 @@ def wallpaper_360():
     #     json_data = response.json()
 
     # else:
-    #     logging.error(f"请求失败，状态码: {response.status_code}")
+    #     logger.error(f"请求失败，状态码: {response.status_code}")
     #     maliang.dialogs.TkMessage(f"请求失败，状态码: {response.status_code}", title="错误", icon="error")
 
 def wallpaper_choose(ch):
@@ -3953,14 +3962,7 @@ canvas_download = maliang.Canvas(root, auto_zoom=True, keep_ratio="min", free_an
 # canvas_detail.place(width=1280, height=720, x=640, y=360, anchor="center")
 
 
-def huazhi_re1():
-    global detail_image_url
-    home_page_assets_data["url"]
-    # print(1080)
-def huazhi_re2(*args):
-    global detail_image_url
-    home_page_assets_data["url"].replace('1920x1080', 'UHD')
-    # print("UHD")
+
 def dd(*args):
     def long_running_task1():
         try:
@@ -3988,8 +3990,8 @@ def dd(*args):
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
-            logging.info("开始下载")
-            logging.info(f"开始下载 {filename}，总大小: {file_size} bytes，分为 {num_chunks} 段。")
+            logger.info("开始下载")
+            logger.info(f"开始下载 {filename}，总大小: {file_size} bytes，分为 {num_chunks} 段。")
 
             with open(f"{cog.get_value("data.download_path")}\\{filename}", 'wb') as file:
                 for i in range(num_chunks):
@@ -4004,15 +4006,15 @@ def dd(*args):
                     if chunk_response.status_code in (200, 206):  # 206表示部分内容
                         file.write(chunk_response.content)
                         root.update_idletasks()
-                        logging.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
+                        logger.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
                     else:
-                        logging.info(f"下载失败，状态码: {chunk_response.status_code}")
+                        logger.info(f"下载失败，状态码: {chunk_response.status_code}")
                         root.update_idletasks()
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
 
-            logging.info("下载完成！")
+            logger.info("下载完成！")
             os.system(f"explorer.exe /select,\"{cog.get_value("data.download_path")}\\{filename}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
             notification.notify(
@@ -4024,7 +4026,7 @@ def dd(*args):
             more_bing()
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
-            logging.error(f"下载失败{e}")
+            logger.error(f"下载失败{e}")
 
             more_bing()
 
@@ -4073,8 +4075,8 @@ def ll(*args):
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
-            logging.info("开始下载")
-            logging.info(f"开始下载 {filename}，总大小: {file_size} bytes，分为 {num_chunks} 段。")
+            logger.info("开始下载")
+            logger.info(f"开始下载 {filename}，总大小: {file_size} bytes，分为 {num_chunks} 段。")
             # home_page_assets_pathn=filedialog.askdirectory()
             with open(f"{filename}", 'wb') as file:
                 for i in range(num_chunks):
@@ -4089,15 +4091,15 @@ def ll(*args):
                     if chunk_response.status_code in (200, 206):  # 206表示部分内容
                         file.write(chunk_response.content)
                         root.update_idletasks()
-                        logging.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
+                        logger.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
                     else:
-                        logging.info(f"下载失败，状态码: {chunk_response.status_code}")
+                        logger.info(f"下载失败，状态码: {chunk_response.status_code}")
                         root.update_idletasks()
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
 
-            logging.info("下载完成！")
+            logger.info("下载完成！")
             os.system(f"explorer.exe /select,\"{filename.replace("/","\\")}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
             notification.notify(
@@ -4109,7 +4111,7 @@ def ll(*args):
             more_bing()
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
-            logging.error(f"下载失败{e}")
+            logger.error(f"下载失败{e}")
 
             more_bing()
 
@@ -4155,8 +4157,8 @@ def set_w_bing(*args):
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
-            logging.info("开始下载")
-            logging.info(f"开始下载 bk.jpg，总大小: {file_size} bytes，分为 {num_chunks} 段。")
+            logger.info("开始下载")
+            logger.info(f"开始下载 bk.jpg，总大小: {file_size} bytes，分为 {num_chunks} 段。")
 
             with open("{WALLPAPER_PATH}bk.jpg", 'wb') as file:
                 for i in range(num_chunks):
@@ -4171,15 +4173,15 @@ def set_w_bing(*args):
                     if chunk_response.status_code in (200, 206):  # 206表示部分内容
                         file.write(chunk_response.content)
                         root.update_idletasks()
-                        logging.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
+                        logger.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
                     else:
-                        logging.info(f"下载失败，状态码: {chunk_response.status_code}")
+                        logger.info(f"下载失败，状态码: {chunk_response.status_code}")
                         root.update_idletasks()
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
 
-            logging.info("下载完成！")
+            logger.info("下载完成！")
             # os.system(f"explorer.exe /select,\"{cog.get_value("data.download_path")}\\{filename}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
             set_wallpaper("{WALLPAPER_PATH}bk.jpg")
@@ -4192,7 +4194,7 @@ def set_w_bing(*args):
             more_bing()
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
-            logging.error(f"下载失败{e}")
+            logger.error(f"下载失败{e}")
 
             more_bing()
 
@@ -4216,6 +4218,7 @@ def copy_w_bing(*args):
         try:
             # global bing_data_name
             url=detail_image_url
+            logger.debug(f"复制图片URL: {url}")
             # print(get_bing_image())
             root.update_idletasks()
             # 自定义用户代理
@@ -4236,8 +4239,8 @@ def copy_w_bing(*args):
             # 设定分段大小（例如：1MB）
             chunk_size = 1024 * 1024  # 1MB
             num_chunks = (file_size // chunk_size) + 1
-            logging.info("开始下载")
-            logging.info(f"开始下载 {TEMP}\\copy.jpg，总大小: {file_size} bytes，分为 {num_chunks} 段。")
+            logger.info("开始下载")
+            logger.info(f"开始下载 {TEMP}\\copy.jpg，总大小: {file_size} bytes，分为 {num_chunks} 段。")
 
             with open(f"{TEMP}\\copy.jpg", 'wb') as file:
                 for i in range(num_chunks):
@@ -4252,15 +4255,15 @@ def copy_w_bing(*args):
                     if chunk_response.status_code in (200, 206):  # 206表示部分内容
                         file.write(chunk_response.content)
                         root.update_idletasks()
-                        logging.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
+                        logger.info(f"下载段 {i + 1}/{num_chunks} 完成，大小: {len(chunk_response.content)} bytes")
                     else:
-                        logging.info(f"下载失败，状态码: {chunk_response.status_code}")
+                        logger.error(f"下载失败，状态码: {chunk_response.status_code}")
                         root.update_idletasks()
                         maliang.dialogs.TkMessage(f"下载失败，状态码: {chunk_response.status_code}", title="错误", icon="error")
                         os._exit(0)
             # print(bing_data_name)
 
-            logging.info("下载完成！")
+            logger.info("下载完成！")
             # os.system(f"explorer.exe /select,\"{cog.get_value("data.download_path")}\\{filename}\"")
             # maliang.dialogs.TkMessage(f"下载完成，文件位于：{cog.get_value("data.download_path")}\n文件名：{filename}", title="提示", icon="info")
             copy_image_to_clipboard(f"{TEMP}\\copy.jpg")
@@ -4273,7 +4276,7 @@ def copy_w_bing(*args):
             more_bing()
         except Exception as e:
             maliang.dialogs.TkMessage("下载失败，详细错误信息请查看日志", title="错误", icon="error")
-            logging.error(f"下载失败{e}")
+            logger.error(f"下载失败{e}")
             more_bing()
 
         # 任务完成后更新窗口
@@ -4396,17 +4399,17 @@ class UpdateChecker:
             try:
                 result = self.result_queue.get(timeout=self.timeout)
             except queue.Empty:
-                logging.error("更新检查超时")
+                logger.error("更新检查超时")
 
                 result["error_message"] = "请求超时"
             except Exception as e:
-                logging.error(f"更新检查异常: {str(e)}")
+                logger.error(f"更新检查异常: {str(e)}")
 
                 result["error_message"] = str(e)
             finally:
                 if callback:
                     if result.get('status') == 'error' and retries > 0:
-                        logging.info(f"剩余重试次数：{retries-1}")
+                        logger.info(f"剩余重试次数：{retries-1}")
                         self.async_check(callback=callback, retries=retries-1, **kwargs)
                     else:
                         callback(result)
@@ -4487,7 +4490,7 @@ def load_home_page_data():
     try:
         # 检查并删除已存在的临时文件
         if os.path.exists(temp_filename):
-            logging.info(f"发现已存在的临时文件 {temp_filename}，正在删除...".replace("\\","/"))
+            logger.info(f"发现已存在的临时文件 {temp_filename}，正在删除...".replace("\\","/"))
             os.remove(temp_filename)
 
         # 创建一个会话
@@ -4524,7 +4527,7 @@ def load_home_page_data():
                         else:
                             loading_ring.set(1.0)
         loading_ring.set(1.0)
-        logging.info(f"图片已成功下载并保存为临时文件 {temp_filename}".replace("\\","/"))
+        logger.info(f"图片已成功下载并保存为临时文件 {temp_filename}".replace("\\","/"))
 
         # 使用内存中的BytesIO来识别图片格式
         with open(temp_filename, 'rb') as f:
@@ -4538,17 +4541,17 @@ def load_home_page_data():
         # 确保最终文件不存在，然后重命名
         final_filepath = f"{final_filename}.{image_format}"
         if os.path.exists(final_filepath):
-            logging.info(f"发现已存在的最终文件 {final_filepath}，正在删除...".replace("\\","/"))
+            logger.info(f"发现已存在的最终文件 {final_filepath}，正在删除...".replace("\\","/"))
             os.remove(final_filepath)
 
         os.rename(temp_filename, final_filepath)
 
-        logging.info(f"图片格式识别为 {image_format}，已保存为 {final_filepath}".replace("\\","/"))
+        logger.info(f"图片格式识别为 {image_format}，已保存为 {final_filepath}".replace("\\","/"))
 
         home_page_assets_path = final_filepath
     except Exception as e:
         error_msg = f"下载图片时出错: {str(e)}"
-        logging.error(error_msg)
+        logger.error(error_msg)
 
         # 如果下载失败，删除临时文件
         if os.path.exists(temp_filename):
@@ -4567,9 +4570,10 @@ def load_home_page_data():
                 case 0:
                     detail_image_url=home_page_assets_data["detail"]["url"]
                 case 1:
-                    detail_image_url=home_page_assets_data["detail"]["url"].replace("1920x1080", "HUD")
+                    detail_image_url=home_page_assets_data["detail"]["url"].replace("1920x1080", "UHD")
+                    
         maliang.SegmentedButton(canvas_detail, (1000, 585), text=(
-            "1080P", "HUD(原图)"), default=0, command=update_image_url)
+            "1080P", "UHD(原图)"), default=0, command=update_image_url)
     else:
         maliang.Text(canvas_detail,(980, 615),text="方向：",fontsize=18,anchor="center")
         def update_image_url(choose):
@@ -4598,16 +4602,16 @@ if cog.get_value("update.enabled"):
             global is_have_update, update_check_result
             update_check_result = result
             if result["status"] == "update_available":
-                logging.info(f"发现新版本: {result['version']}")
+                logger.info(f"发现新版本: {result['version']}")
                 is_have_update=True
 
             elif result["status"] == "test_update":
-                logging.info("测试更新被触发")
+                logger.info("测试更新被触发")
                 is_have_update=True
             elif result["status"] == "error":
-                logging.error(f"更新检查失败：{result['error_message']}")
+                logger.error(f"更新检查失败：{result['error_message']}")
                 maliang.TkMessage(icon="error",title="更新",message="更新检查失败",detail="详细错误信息请查看日志")
-            logging.info("开始加载资源")
+            logger.info("开始加载资源")
             threading.Thread(target=load_home_page_data, daemon=True).start()
 
 
@@ -4615,7 +4619,7 @@ if cog.get_value("update.enabled"):
         checker.async_check(callback=handle_update_result)
 
     except Exception as e:
-        logging.error(f"更新检查失败：{e}")
+        logger.error(f"更新检查失败：{e}")
 
         maliang.dialogs.TkMessage(icon="error",title="更新",message="更新检查失败",detail="未知错误\n详细错误信息请查看日志")
 

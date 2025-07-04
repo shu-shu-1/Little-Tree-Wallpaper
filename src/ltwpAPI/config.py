@@ -130,7 +130,11 @@ automatic_wallpaper_change = 0 # 是否自动开启壁纸自动轮换
 
 [home_page]
 source = "bing" # 首页壁纸来源
-style = "default" # 首页布局"""
+style = "test" # 首页布局
+
+[quick_panel]
+auto_open = 1 # 是否自动打开快速面板
+always_on_top = 0 # 是否总是显示在顶层"""
         self.config = parse(default_config)
         self.save_config()
         self.reload_config()

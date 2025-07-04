@@ -33,6 +33,7 @@ dependencies = [
     "python-magic-bin>=0.4.14; platform_system == 'Windows'",
     "filetype>=1.2.0",
     "psutil>=7.0.0; platform_system == 'Windows'",
+    "loguru>=0.7.3",
 ]
 
 [project.optional-dependencies]
