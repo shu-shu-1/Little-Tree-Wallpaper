@@ -2,6 +2,7 @@ import os
 import platform
 import subprocess
 
+
 class WallpaperChanger:
     """壁纸更换器类，用于在不同操作系统上更改桌面壁纸。
 

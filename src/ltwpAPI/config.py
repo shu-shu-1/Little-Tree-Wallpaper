@@ -1,15 +1,15 @@
 import os
-from tomlkit import TOMLDocument, parse, dumps
 from typing import Any
 
+from tomlkit import TOMLDocument, dumps, parse
+
+
 class ConfigManager:
-    """
-    配置管理器类，用于加载、保存和管理配置文件。
+    """配置管理器类，用于加载、保存和管理配置文件。
     """
 
     def __init__(self, config_path: str = "Config.toml"):
-        """
-        初始化配置管理器。
+        """初始化配置管理器。
 
         :param config_path: 配置文件的路径，默认为 "Config.toml"
         """
@@ -17,8 +17,7 @@ class ConfigManager:
         self.config: TOMLDocument = self._load_config()
 
     def _load_config(self) -> TOMLDocument:
-        """
-        加载配置文件。
+        """加载配置文件。
 
         如果配置文件不存在，则抛出 FileNotFoundError 异常。
 
@@ -27,20 +26,18 @@ class ConfigManager:
         """
         if not os.path.exists(self.config_path):
             raise FileNotFoundError(f"配置文件 {self.config_path} 不存在")
-        
-        with open(self.config_path, "r", encoding="utf-8") as file:
+
+        with open(self.config_path, encoding="utf-8") as file:
             return parse(file.read())
 
     def save_config(self):
-        """
-        保存配置文件到指定路径。
+        """保存配置文件到指定路径。
         """
         with open(self.config_path, "w", encoding="utf-8") as file:
             file.write(dumps(self.config))
 
     def get_value(self, key_path: str) -> Any:
-        """
-        根据键路径获取配置值。
+        """根据键路径获取配置值。
 
         :param key_path: 配置项的键路径，使用点号分隔层级，例如 "display.language"
         :return: 配置项的值
@@ -51,14 +48,12 @@ class ConfigManager:
             value = value[key]
         return value
     def reload_config(self):
-        """
-        重新加载配置文件。
+        """重新加载配置文件。
         """
         self.config = self._load_config()
 
     def set_value(self, key_path: str, value: Any, save_config: bool = True , reload_config: bool = True):
-        """
-        根据键路径设置配置值并保存配置文件。
+        """根据键路径设置配置值并保存配置文件。
 
         :param key_path: 配置项的键路径，使用点号分隔层级，例如 "display.language"
         :param value: 要设置的配置项的值
@@ -77,8 +72,7 @@ class ConfigManager:
             self.reload_config()
 
     def reset_config(self):
-        """
-        将配置文件重置为默认值并保存。
+        """将配置文件重置为默认值并保存。
         """
         default_config = """[info] # 配置文件信息
 version = "2.0.0" # 配置文件版本
